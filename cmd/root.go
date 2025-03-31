@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/cmd/generate"
-	_ "github.com/mickamy/gon/cmd/generate"
+	initCmd "github.com/mickamy/gon/cmd/init"
 )
 
 var Cmd = &cobra.Command{
@@ -17,6 +17,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
+	Cmd.AddCommand(initCmd.Cmd)
 	Cmd.AddCommand(generate.Cmd)
 }
 

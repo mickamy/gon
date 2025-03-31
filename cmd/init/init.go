@@ -3,6 +3,7 @@ package init
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"text/template"
 
@@ -13,11 +14,12 @@ const defaultConfig = `basePackage: github.com/:name/:project
 outputDir: internal/domain
 defaultDriver: gorm
 defaultWeb: echo
+databasePackage: github.com/:name/:project/internal/storage/database
 `
 
 var Cmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize a gon.yaml config file",
+	Short: "Initialize a gon.yaml config file and install dependencies",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		path := filepath.Join(".", "gon.yaml")
 
@@ -45,6 +47,14 @@ var Cmd = &cobra.Command{
 		}
 
 		fmt.Println("✅ gon.yaml created.")
+
+		fmt.Println("📦 Installing gomock...")
+		if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
+			fmt.Println("⚠️ Failed to install gomock:", err)
+		} else {
+			fmt.Println("✅ gomock installed.")
+		}
+
 		return nil
 	},
 }

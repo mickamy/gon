@@ -29,7 +29,7 @@ var Cmd = &cobra.Command{
 	Short: "Generate a domain model",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name := args[0]
+		name := gon.Uncapitalize(args[0])
 		fields := parseFields(args[1:])
 
 		data := TemplateData{
@@ -38,13 +38,23 @@ var Cmd = &cobra.Command{
 		}
 
 		fmt.Println("Generating model...")
-		if err := renderToFile(data, filepath.Join("internal", "domain", "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))); err != nil {
+		if domain == "" {
+			fmt.Println("Domain not specified. Using the entity name as the domain.")
+			domain = name
+		}
+		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))); err != nil {
 			return err
 		}
 
 		fmt.Println("Model generated successfully.")
 		return nil
 	},
+}
+
+var domain string
+
+func init() {
+	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
 }
 
 func parseFields(raw []string) []Field {

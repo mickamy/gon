@@ -7,10 +7,11 @@ import (
 )
 
 type Config struct {
-	BasePackage   string `mapstructure:"basePackage"`
-	OutputDir     string `mapstructure:"outputDir"`
-	DefaultDriver string `mapstructure:"defaultDriver"`
-	DefaultWeb    string `mapstructure:"defaultWeb"`
+	BasePackage     string `mapstructure:"basePackage"`
+	OutputDir       string `mapstructure:"outputDir"`
+	DefaultDriver   string `mapstructure:"defaultDriver"`
+	DefaultWeb      string `mapstructure:"defaultWeb"`
+	DatabasePackage string `mapstructure:"databasePackage"`
 }
 
 func LoadConfig() (*Config, error) {

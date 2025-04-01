@@ -18,10 +18,8 @@ type ListUser interface {
 type listUser struct {
 }
 
-func NewListUser(
-) ListUser {
-	return &listUser{
-	}
+func NewListUser() ListUser {
+	return &listUser{}
 }
 
 func (uc listUser) Do(ctx context.Context, input ListUserInput) (ListUserOutput, error) {

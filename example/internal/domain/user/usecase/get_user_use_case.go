@@ -18,10 +18,8 @@ type GetUser interface {
 type getUser struct {
 }
 
-func NewGetUser(
-) GetUser {
-	return &getUser{
-	}
+func NewGetUser() GetUser {
+	return &getUser{}
 }
 
 func (uc getUser) Do(ctx context.Context, input GetUserInput) (GetUserOutput, error) {

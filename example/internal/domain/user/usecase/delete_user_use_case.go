@@ -18,10 +18,8 @@ type DeleteUser interface {
 type deleteUser struct {
 }
 
-func NewDeleteUser(
-) DeleteUser {
-	return &deleteUser{
-	}
+func NewDeleteUser() DeleteUser {
+	return &deleteUser{}
 }
 
 func (uc deleteUser) Do(ctx context.Context, input DeleteUserInput) (DeleteUserOutput, error) {

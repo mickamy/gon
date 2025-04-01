@@ -18,10 +18,8 @@ type UpdateUser interface {
 type updateUser struct {
 }
 
-func NewUpdateUser(
-) UpdateUser {
-	return &updateUser{
-	}
+func NewUpdateUser() UpdateUser {
+	return &updateUser{}
 }
 
 func (uc updateUser) Do(ctx context.Context, input UpdateUserInput) (UpdateUserOutput, error) {

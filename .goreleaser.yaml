@@ -10,8 +10,8 @@ release:
 builds:
   - id: gon
     main: ./main.go
-    goos: [darwin, linux, windows]
-    goarch: [amd64, arm64]
+    goos: [ darwin, linux, windows ]
+    goarch: [ amd64, arm64 ]
     ldflags:
       - "-X github.com/mickamy/gon/cmd/version.Version={{.Version}}"
     binary: gon

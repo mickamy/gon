@@ -79,7 +79,8 @@ internal/
 
 ## 🛠 Template Driven
 
-Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults during `gon install`.
+Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults
+during `gon install`.
 
 ---
 

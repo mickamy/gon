@@ -18,10 +18,8 @@ type CreateUser interface {
 type createUser struct {
 }
 
-func NewCreateUser(
-) CreateUser {
-	return &createUser{
-	}
+func NewCreateUser() CreateUser {
+	return &createUser{}
 }
 
 func (uc createUser) Do(ctx context.Context, input CreateUserInput) (CreateUserOutput, error) {

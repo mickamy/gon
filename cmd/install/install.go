@@ -13,8 +13,9 @@ import (
 )
 
 var Cmd = &cobra.Command{
-	Use:   "install",
-	Short: "Generate database file, install dependencies, and prepare templates",
+	Use:     "install",
+	Aliases: []string{"i"},
+	Short:   "Generate database file, install dependencies, and prepare templates",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
 		if err != nil {

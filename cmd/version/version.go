@@ -9,8 +9,9 @@ import (
 var Version = "dev"
 
 var Cmd = &cobra.Command{
-	Use:   "version",
-	Short: "Show gon version",
+	Use:     "version",
+	Aliases: []string{"v"},
+	Short:   "Show gon version",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("gon version %s\n", Version)
 	},

@@ -12,10 +12,18 @@ import (
 	"github.com/mickamy/gon/cmd/version"
 )
 
+var versionFlag bool
+
 var Cmd = &cobra.Command{
 	Use:   "gon",
 	Short: "gon is a code generator for Go with Clean Architecture layout",
 	Long:  `gon scaffolds models, repositories, usecases, and handlers with opinionated structure.`,
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		if versionFlag {
+			fmt.Printf("gon version %s\n", version.Version)
+			os.Exit(0)
+		}
+	},
 }
 
 func init() {

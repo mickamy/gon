@@ -1,7 +1,6 @@
 # gon
 
 > Scaffold models, usecases, and handlers for Go apps with an opinionated directory layout.
->
 
 ---
 
@@ -16,15 +15,21 @@
 
 ## 🚀 Installation
 
-```
+### Go 1.17 or later
+
+```bash
 go install github.com/mickamy/gon@latest
 ```
 
-Or if you prefer to use `go get tool`:
+Make sure `$GOPATH/bin` is in your `$PATH`.
 
-```
+### Go 1.24 or later (with `go get -tool`)
+
+```bash
 go get -tool github.com/mickamy/gon
 ```
+
+This installs `gon` to `$GOTOOLDIR/bin` (usually `$HOME/go/bin`).
 
 ---
 
@@ -32,44 +37,49 @@ go get -tool github.com/mickamy/gon
 
 ### Generate a domain model
 
-```
+```bash
 gon generate model User name:string email:string
+# or simply
+gon g model User name:string email:string
 ```
 
 ### Generate a usecase
 
-```
-gon generate usecase CreateUser
+```bash
+gon g usecase CreateUser
 ```
 
 ### Generate a handler
 
-```
-gon generate handler UserHandler --with-usecase
+```bash
+gon g handler User
 ```
 
 ---
 
 ## 📁 Output Structure
 
-```
+```text
 internal/
-├── domain/
-│   ├── model/
-│   │   └── user.go
-│   ├── usecase/
-│   │   └── create_user.go
-│   ├── repository/
-│   │   └── user_repository.go
-│   └── handler/
-│       └── user_handler.go
+└── domain/
+    └── user/
+        ├── model/
+        │   └── user_model.go
+        ├── usecase/
+        │   └── create_user_use_case.go
+        ├── repository/
+        │   └── user_repository.go
+        └── handler/
+            └── user_handler.go
 ```
+
+> Each subdirectory under `domain/{name}` is a separate package.
 
 ---
 
 ## 🛠 Template Driven
 
-Templates are embedded using Go 1.16+ `embed` package. You can customize them later.
+Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults during `gon install`.
 
 ---
 

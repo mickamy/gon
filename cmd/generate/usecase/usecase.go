@@ -26,7 +26,11 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Generate(cfg, args)
+		if err := Generate(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed generate usecase file: %w", err)
+		}
+		fmt.Println("✅ Usecase file generated successfully.")
+		return nil
 	},
 }
 
@@ -36,7 +40,7 @@ func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
 }
 
-func Generate(cfg *config.Config, args []string) error {
+func Generate(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
@@ -48,13 +52,11 @@ func Generate(cfg *config.Config, args []string) error {
 		UncapitalizedName: gon.Uncapitalize(name),
 	}
 
-	fmt.Println("📄 Generating usecase file...")
 	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.ToSnakeCase(name)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}
 
-	fmt.Println("✅ Usecase file generated successfully.")
 	return nil
 }
 

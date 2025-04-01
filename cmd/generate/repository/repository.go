@@ -30,7 +30,11 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Generate(cfg, args)
+		if err := Generate(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed generate repository file: %w", err)
+		}
+		fmt.Println("✅ Repository file generated successfully.")
+		return nil
 	},
 }
 
@@ -40,7 +44,7 @@ func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
 }
 
-func Generate(cfg *config.Config, args []string) error {
+func Generate(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
@@ -55,13 +59,11 @@ func Generate(cfg *config.Config, args []string) error {
 		DomainName:      gon.Uncapitalize(domain),
 	}
 
-	fmt.Println("📄 Generating repository file...")
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}
 
-	fmt.Println("✅ Repository file generated successfully.")
 	return nil
 }
 

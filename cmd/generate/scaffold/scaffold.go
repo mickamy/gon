@@ -2,20 +2,24 @@ package scaffold
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/mickamy/gon/cmd/generate/handler"
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
 	"github.com/mickamy/gon/cmd/generate/usecase"
-	"github.com/mickamy/gon/internal/gon"
+	"github.com/mickamy/gon/internal/config"
 )
 
 var domain string
 
 var Cmd = &cobra.Command{
-	Use:   "scaffold [model] [fields]",
+	Use:   "scaffold [name] [fields]",
 	Short: "Generate model, repository, usecase, and handler for a domain entity",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -27,32 +31,46 @@ var Cmd = &cobra.Command{
 			domain = name
 		}
 
-		capitalizedName := gon.Capitalize(name)
-		subcommands := []struct {
-			cmd  *cobra.Command
-			args []string
-		}{
-			{model.Cmd, append([]string{name}, fields...)},
-			{repository.Cmd, []string{name}},
-			{usecase.Cmd, []string{"Get" + capitalizedName}},
-			{usecase.Cmd, []string{"List" + capitalizedName}},
-			{usecase.Cmd, []string{"Create" + capitalizedName}},
-			{usecase.Cmd, []string{"Update" + capitalizedName}},
-			{usecase.Cmd, []string{"Delete" + capitalizedName}},
-			{handler.Cmd, []string{name, "Get", "List", "Create", "Update", "Delete"}},
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
 
-		for _, sub := range subcommands {
-			_ = sub.cmd.Flags().Set("domain", domain)
-			if sub.cmd.RunE == nil {
-				continue
-			}
-			if err := sub.cmd.RunE(sub.cmd, sub.args); err != nil {
-				return fmt.Errorf("failed to execute %s: %w", sub.cmd.Use, err)
-			}
-		}
+		fmt.Printf("📦 Scaffolding domain: %s (entity: %s)\n\n", domain, name)
 
-		fmt.Println("🎉 Scaffold complete.")
+		// --- Model ---
+		if err := model.Generate(cfg, append([]string{name}, fields...), domain); err != nil {
+			return fmt.Errorf("model generation failed: %w", err)
+		}
+		fmt.Printf("✅ model:      %s\n", filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name))))
+
+		// --- Repository ---
+		if err := repository.Generate(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("repository generation failed: %w", err)
+		}
+		fmt.Printf("✅ repository: %s\n", filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name))))
+
+		// --- Usecase ---
+		actions := []string{"create", "get", "update", "delete"}
+		var usecaseFiles []string
+		for _, action := range actions {
+			caser := cases.Title(language.English)
+			ucName := caser.String(action)
+			if err := usecase.Generate(cfg, []string{ucName}, domain); err != nil {
+				return fmt.Errorf("usecase generation failed: %w", err)
+			}
+			snake := strings.ToLower(action + "_" + name)
+			usecaseFiles = append(usecaseFiles, snake)
+		}
+		fmt.Printf("✅ usecase:    %s\n", strings.Join(usecaseFiles, ", "))
+
+		// --- Handler ---
+		if err := handler.Generate(cfg, append([]string{name}, actions...), domain); err != nil {
+			return fmt.Errorf("handler generation failed: %w", err)
+		}
+		fmt.Printf("✅ handler:    %s\n", filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(name))))
+
+		fmt.Println("\n🎉 Done.")
 		return nil
 	},
 }

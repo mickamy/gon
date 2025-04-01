@@ -34,11 +34,15 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Generate(cfg, args)
+		if err := Generate(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed to generate model file: %w", err)
+		}
+		fmt.Println("✅ Model file generated successfully.")
+		return nil
 	},
 }
 
-func Generate(cfg *config.Config, args []string) error {
+func Generate(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 	fields := parseFields(args[1:])
 
@@ -47,7 +51,6 @@ func Generate(cfg *config.Config, args []string) error {
 		Fields:     fields,
 	}
 
-	fmt.Println("📄 Generating model file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
@@ -57,7 +60,6 @@ func Generate(cfg *config.Config, args []string) error {
 		return err
 	}
 
-	fmt.Println("✅ Model file generated successfully.")
 	return nil
 }
 

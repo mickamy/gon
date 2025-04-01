@@ -33,15 +33,18 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Generate(cfg, args)
+		if err := Generate(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed to generate handler file: %w", err)
+		}
+		fmt.Println("✅ Handler file generated successfully.")
+		return nil
 	},
 }
 
-func Generate(cfg *config.Config, args []string) error {
+func Generate(cfg *config.Config, args []string, domain string) error {
 	entity := gon.Capitalize(args[0])
 	actions := args[1:]
 
-	fmt.Println("📄 Generating handler file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", entity)
 		domain = gon.Uncapitalize(entity)
@@ -57,7 +60,6 @@ func Generate(cfg *config.Config, args []string) error {
 		return err
 	}
 
-	fmt.Println("✅ Handler file generated successfully.")
 	return nil
 }
 

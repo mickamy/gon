@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/templates"
+	"github.com/mickamy/gon/internal/templates"
 )
 
 var Cmd = &cobra.Command{

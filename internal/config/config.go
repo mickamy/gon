@@ -28,11 +28,13 @@ const (
 )
 
 type Config struct {
-	BasePackage     string `mapstructure:"basePackage"`
-	OutputDir       string `mapstructure:"outputDir"`
-	DefaultDriver   Driver `mapstructure:"defaultDriver"`
-	DefaultWeb      Web    `mapstructure:"defaultWeb"`
-	DatabasePackage string `mapstructure:"databasePackage"`
+	BasePackage        string `mapstructure:"basePackage"`
+	OutputDir          string `mapstructure:"outputDir"`
+	DefaultDriver      Driver `mapstructure:"defaultDriver"`
+	DefaultWeb         Web    `mapstructure:"defaultWeb"`
+	DatabasePackage    string `mapstructure:"databasePackage"`
+	ModelTemplate      string `mapstructure:"modelTemplate"`
+	RepositoryTemplate string `mapstructure:"repositoryTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {

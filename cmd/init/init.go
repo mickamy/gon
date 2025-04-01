@@ -14,6 +14,8 @@ outputDir: internal/domain
 defaultDriver: gorm
 defaultWeb: echo
 databasePackage: github.com/:name/:project/internal/infra/storage/database
+modelTemplate: ./templates/model.tmpl
+repositoryTemplate: ./templates/repository.tmpl
 `
 
 var Cmd = &cobra.Command{

@@ -56,7 +56,7 @@ func init() {
 }
 
 func renderToFile(data TemplateData, outPath string) error {
-	b, err := templates.FS.ReadFile("repository.tmpl")
+	b, err := templates.DefaultFS.ReadFile("repository_gorm.tmpl")
 	if err != nil {
 		return err
 	}

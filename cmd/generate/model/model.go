@@ -74,11 +74,23 @@ func parseFields(raw []string) []Field {
 }
 
 func renderToFile(data TemplateData, outPath string) error {
-	b, err := templates.FS.ReadFile("model.tmpl")
-	if err != nil {
-		return err
+	tmplFile := gon.Config.ModelTemplate
+
+	var bytes []byte
+	var err error
+
+	if _, statErr := os.Stat(tmplFile); statErr == nil {
+		bytes, err = os.ReadFile(tmplFile)
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to read local template %q: %w", tmplFile, err)
+		}
+	} else {
+		bytes, err = templates.DefaultFS.ReadFile(tmplFile)
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to read embedded template %q: %w", tmplFile, err)
+		}
 	}
-	tmplContent := string(b)
+	tmplContent := string(bytes)
 
 	tmpl, err := template.New("model").Parse(tmplContent)
 	if err != nil {
@@ -94,8 +106,7 @@ func renderToFile(data TemplateData, outPath string) error {
 		return err
 	}
 	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
+		if err := file.Close(); err != nil {
 			fmt.Printf("⚠️ Failed to close file: %v\n", err)
 		}
 	}(file)

@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed *.tmpl
-var FS embed.FS
+//go:embed defaults/*.tmpl
+var DefaultFS embed.FS

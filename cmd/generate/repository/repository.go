@@ -2,15 +2,14 @@ package repository
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
+	"github.com/mickamy/gon/internal/templates"
 )
 
 type TemplateData struct {
@@ -60,39 +59,18 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
-	if err := renderToFile(cfg, data, outPath); err != nil {
+	if err := templates.Render(cfg.RepositoryTemplate, data, outPath); err != nil {
 		return err
+	}
+
+	if cfg.RepositoryTestTemplate != "" {
+		testOutPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository_test.go", strings.ToLower(name)))
+		if err := templates.Render(cfg.RepositoryTestTemplate, data, testOutPath); err != nil {
+			return err
+		}
+	} else {
+		fmt.Println("⚠️ No repository test template specified. Skipping test file generation.")
 	}
 
 	return nil
-}
-
-func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
-	b, err := os.ReadFile(cfg.RepositoryTemplate)
-	if err != nil {
-		return err
-	}
-	tmplContent := string(b)
-
-	tmpl, err := template.New("repository").Parse(tmplContent)
-	if err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
-		return err
-	}
-
-	file, err := os.Create(outPath)
-	if err != nil {
-		return err
-	}
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-			fmt.Printf("⚠️ Failed to close file: %v\n", err)
-		}
-	}(file)
-
-	return tmpl.Execute(file, data)
 }

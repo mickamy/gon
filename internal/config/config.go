@@ -50,15 +50,19 @@ const (
 )
 
 type Config struct {
-	BasePackage        string       `mapstructure:"basePackage"`
-	OutputDir          string       `mapstructure:"outputDir"`
-	DBDriver           DBDriver     `mapstructure:"dbDriver"`
-	WebFramework       WebFramework `mapstructure:"webFramework"`
-	DatabasePackage    string       `mapstructure:"databasePackage"`
-	ModelTemplate      string       `mapstructure:"modelTemplate"`
-	RepositoryTemplate string       `mapstructure:"repositoryTemplate"`
-	UsecaseTemplate    string       `mapstructure:"usecaseTemplate"`
-	HandlerTemplate    string       `mapstructure:"handlerTemplate"`
+	BasePackage            string       `mapstructure:"basePackage"`
+	OutputDir              string       `mapstructure:"outputDir"`
+	DBDriver               DBDriver     `mapstructure:"dbDriver"`
+	WebFramework           WebFramework `mapstructure:"webFramework"`
+	DatabasePackage        string       `mapstructure:"databasePackage"`
+	ModelTemplate          string       `mapstructure:"modelTemplate"`
+	ModelTestTemplate      string       `mapstructure:"modelTestTemplate"`
+	RepositoryTemplate     string       `mapstructure:"repositoryTemplate"`
+	RepositoryTestTemplate string       `mapstructure:"repositoryTestTemplate"`
+	UsecaseTemplate        string       `mapstructure:"usecaseTemplate"`
+	UsecaseTestTemplate    string       `mapstructure:"usecaseTestTemplate"`
+	HandlerTemplate        string       `mapstructure:"handlerTemplate"`
+	HandlerTestTemplate    string       `mapstructure:"handlerTestTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {

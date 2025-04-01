@@ -19,9 +19,13 @@ dbDriver: {{.DBDriver}}
 webFramework: {{.WebFramework}}
 databasePackage: {{.DatabasePackage}}
 modelTemplate: ./templates/model.tmpl
+modelTestTemplate: ./templates/model_test.tmpl
 repositoryTemplate: ./templates/repository.tmpl
+repositoryTestTemplate: ./templates/repository_test.tmpl
 usecaseTemplate: ./templates/usecase.tmpl
+usecaseTestTemplate: ./templates/usecase_test.tmpl
 handlerTemplate: ./templates/handler.tmpl
+handlerTestTemplate: ./templates/handler_test.tmpl
 `
 
 type configInput struct {

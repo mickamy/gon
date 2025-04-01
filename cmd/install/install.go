@@ -85,6 +85,14 @@ func writeTemplateFiles(cfg *config.Config) error {
 				return "defaults/model.tmpl"
 			}
 		},
+		cfg.ModelTestTemplate: func() string {
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
+				return "defaults/model_test.tmpl"
+			default:
+				return "defaults/model_test.tmpl"
+			}
+		},
 		cfg.RepositoryTemplate: func() string {
 			switch cfg.DBDriver {
 			case config.DBDriverGorm:
@@ -93,8 +101,19 @@ func writeTemplateFiles(cfg *config.Config) error {
 				return "defaults/repository_gorm.tmpl"
 			}
 		},
+		cfg.RepositoryTestTemplate: func() string {
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
+				return "defaults/repository_test_gorm.tmpl"
+			default:
+				return "defaults/repository_test_gorm.tmpl"
+			}
+		},
 		cfg.UsecaseTemplate: func() string {
 			return "defaults/usecase.tmpl"
+		},
+		cfg.UsecaseTestTemplate: func() string {
+			return "defaults/usecase_test.tmpl"
 		},
 		cfg.HandlerTemplate: func() string {
 			switch cfg.WebFramework {
@@ -102,6 +121,14 @@ func writeTemplateFiles(cfg *config.Config) error {
 				return "defaults/handler_echo.tmpl"
 			default:
 				return "defaults/handler_echo.tmpl"
+			}
+		},
+		cfg.HandlerTestTemplate: func() string {
+			switch cfg.WebFramework {
+			case config.WebFrameworkEcho:
+				return "defaults/handler_test_echo.tmpl"
+			default:
+				return "defaults/handler_test_echo.tmpl"
 			}
 		},
 	}

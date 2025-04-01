@@ -2,10 +2,8 @@ package model
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/spf13/cobra"
 
@@ -56,8 +54,17 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 		domain = name
 	}
 	outPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
-	if err := renderToFile(cfg, data, outPath); err != nil {
+	if err := templates.Render(cfg.ModelTemplate, data, outPath); err != nil {
 		return err
+	}
+
+	if cfg.ModelTestTemplate != "" {
+		testOutPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model_test.go", strings.ToLower(name)))
+		if err := templates.Render(cfg.ModelTestTemplate, data, testOutPath); err != nil {
+			return err
+		}
+	} else {
+		fmt.Printf("⚠️ No model test template specified. Skipping test file generation.\n")
 	}
 
 	return nil
@@ -83,51 +90,4 @@ func parseFields(raw []string) []Field {
 		})
 	}
 	return fields
-}
-
-func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
-	tmplFile := cfg.ModelTemplate
-
-	var bytes []byte
-	var err error
-
-	if _, statErr := os.Stat(tmplFile); statErr == nil {
-		bytes, err = os.ReadFile(tmplFile)
-		if err != nil {
-			return fmt.Errorf("⚠️ Failed to read local template %q: %w", tmplFile, err)
-		}
-	} else {
-		bytes, err = templates.DefaultFS.ReadFile(tmplFile)
-		if err != nil {
-			bytes, err = templates.DefaultFS.ReadFile(tmplFile)
-			if err != nil {
-				return fmt.Errorf(
-					"⚠️ Failed to read embedded template %q: %w\n💡 You might need to run `gon install` to generate default templates.",
-					tmplFile, err,
-				)
-			}
-		}
-	}
-	tmplContent := string(bytes)
-
-	tmpl, err := template.New("model").Parse(tmplContent)
-	if err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
-		return err
-	}
-
-	file, err := os.Create(outPath)
-	if err != nil {
-		return err
-	}
-	defer func(file *os.File) {
-		if err := file.Close(); err != nil {
-			fmt.Printf("⚠️ Failed to close file: %v\n", err)
-		}
-	}(file)
-
-	return tmpl.Execute(file, data)
 }

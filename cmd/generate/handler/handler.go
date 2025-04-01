@@ -2,10 +2,8 @@ package handler
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
-	"text/template"
 
 	"github.com/spf13/cobra"
 
@@ -56,8 +54,17 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(entity)))
-	if err := renderToFile(cfg, data, outPath); err != nil {
+	if err := templates.Render(cfg.HandlerTemplate, data, outPath); err != nil {
 		return err
+	}
+
+	if cfg.HandlerTestTemplate != "" {
+		testOutPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler_test.go", strings.ToLower(entity)))
+		if err := templates.Render(cfg.HandlerTestTemplate, data, testOutPath); err != nil {
+			return err
+		}
+	} else {
+		fmt.Println("⚠️ No handler test template specified. Skipping test file generation.")
 	}
 
 	return nil
@@ -67,53 +74,6 @@ var domain string
 
 func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
-}
-
-func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
-	tmplFile := cfg.HandlerTemplate
-
-	var bytes []byte
-	var err error
-
-	if _, statErr := os.Stat(tmplFile); statErr == nil {
-		bytes, err = os.ReadFile(tmplFile)
-		if err != nil {
-			return fmt.Errorf("⚠️ Failed to read local template %q: %w", tmplFile, err)
-		}
-	} else {
-		bytes, err = templates.DefaultFS.ReadFile(tmplFile)
-		if err != nil {
-			bytes, err = templates.DefaultFS.ReadFile(tmplFile)
-			if err != nil {
-				return fmt.Errorf(
-					"⚠️ Failed to read embedded template %q: %w\n💡 You might need to run `gon install` to generate default templates.",
-					tmplFile, err,
-				)
-			}
-		}
-	}
-	tmplContent := string(bytes)
-
-	tmpl, err := template.New("handler").Parse(tmplContent)
-	if err != nil {
-		return err
-	}
-
-	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
-		return err
-	}
-
-	file, err := os.Create(outPath)
-	if err != nil {
-		return err
-	}
-	defer func(file *os.File) {
-		if err := file.Close(); err != nil {
-			fmt.Printf("⚠️ Failed to close file: %v\n", err)
-		}
-	}(file)
-
-	return tmpl.Execute(file, data)
 }
 
 func parseAction(entity string, raw []string) []Action {

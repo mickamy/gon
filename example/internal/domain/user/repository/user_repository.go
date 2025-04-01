@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -38,6 +39,9 @@ func (repo *user) List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) (
 func (repo *user) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.User, error) {
 	var m model.User
 	err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return m, errors.Join(fmt.Errorf("%w: id=[%s]", database.ErrRecordNotFound, id), err)
+	}
 	return m, err
 }
 

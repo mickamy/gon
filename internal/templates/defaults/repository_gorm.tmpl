@@ -37,8 +37,11 @@ func (repo *{{.LowerEntityName}}) List(ctx context.Context, scopes ...func(*gorm
 
 func (repo *{{.LowerEntityName}}) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error) {
     var m model.{{.EntityName}}
-    err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error
-    return m, err
+	err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return m, errors.Join(fmt.Errorf("%w: id=[%s]", database.ErrRecordNotFound, id), err)
+	}
+	return m, err
 }
 
 func (repo *{{.LowerEntityName}}) Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error) {

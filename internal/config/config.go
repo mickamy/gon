@@ -57,6 +57,7 @@ type Config struct {
 	DatabasePackage    string       `mapstructure:"databasePackage"`
 	ModelTemplate      string       `mapstructure:"modelTemplate"`
 	RepositoryTemplate string       `mapstructure:"repositoryTemplate"`
+	UsecaseTemplate    string       `mapstructure:"usecaseTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {

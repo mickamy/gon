@@ -7,6 +7,8 @@ import (
 
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
+	"github.com/mickamy/gon/cmd/generate/usecase"
+	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
@@ -24,12 +26,17 @@ var Cmd = &cobra.Command{
 			domain = name
 		}
 
+		capitalizedName := gon.Capitalize(name)
 		subcommands := []struct {
 			cmd  *cobra.Command
 			args []string
 		}{
 			{model.Cmd, append([]string{name}, fields...)},
 			{repository.Cmd, []string{name}},
+			{usecase.Cmd, []string{"Get" + capitalizedName}},
+			{usecase.Cmd, []string{"Create" + capitalizedName}},
+			{usecase.Cmd, []string{"Update" + capitalizedName}},
+			{usecase.Cmd, []string{"Delete" + capitalizedName}},
 		}
 
 		for _, sub := range subcommands {

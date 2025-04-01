@@ -93,6 +93,9 @@ func writeTemplateFiles(cfg *config.Config) error {
 				return "defaults/repository_gorm.tmpl"
 			}
 		},
+		cfg.UsecaseTemplate: func() string {
+			return "defaults/usecase.tmpl"
+		},
 	}
 
 	for destPath, embedPathFn := range templateFiles {

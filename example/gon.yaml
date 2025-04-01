@@ -5,3 +5,4 @@ webFramework: echo
 databasePackage: github.com/mickamy/gon-example/internal/infra/storage/database
 modelTemplate: ./templates/model.tmpl
 repositoryTemplate: ./templates/repository.tmpl
+usecaseTemplate: ./templates/usecase.tmpl

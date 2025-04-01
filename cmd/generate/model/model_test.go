@@ -33,7 +33,7 @@ func TestGenerateModel(t *testing.T) {
 	}()
 	_ = os.Chdir(tmp)
 
-	err := model.GenerateModel(cfg, args)
+	err := model.Generate(cfg, args)
 	if err != nil {
 		t.Fatalf("command failed: %v", err)
 	}

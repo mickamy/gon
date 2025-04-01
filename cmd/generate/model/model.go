@@ -34,11 +34,11 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return GenerateModel(cfg, args)
+		return Generate(cfg, args)
 	},
 }
 
-func GenerateModel(cfg *config.Config, args []string) error {
+func Generate(cfg *config.Config, args []string) error {
 	name := gon.Capitalize(args[0])
 	fields := parseFields(args[1:])
 

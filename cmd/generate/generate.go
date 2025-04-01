@@ -6,6 +6,7 @@ import (
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
 	"github.com/mickamy/gon/cmd/generate/scaffold"
+	"github.com/mickamy/gon/cmd/generate/usecase"
 )
 
 var Cmd = &cobra.Command{
@@ -19,4 +20,5 @@ func init() {
 	Cmd.AddCommand(repository.Cmd)
 	Cmd.AddCommand(model.Cmd)
 	Cmd.AddCommand(scaffold.Cmd)
+	Cmd.AddCommand(usecase.Cmd)
 }

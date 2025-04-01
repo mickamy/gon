@@ -5,9 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"{{.UsecasePackage}}"
+	"{{.DomainPackage}}/usecase"
 )
-
 
 {{- range .Actions}}
 type {{.Name}}{{.Entity}}Handler echo.HandlerFunc

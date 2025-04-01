@@ -1,5 +1,6 @@
 basePackage: github.com/mickamy/gon-example
 outputDir: internal/domain
+testUtilDir: ./test
 dbDriver: gorm
 webFramework: echo
 databasePackage: github.com/mickamy/gon-example/internal/infra/storage/database
@@ -11,3 +12,4 @@ repositoryTestTemplate: ./templates/repository_test.tmpl
 usecaseTemplate: ./templates/usecase.tmpl
 usecaseTestTemplate: ./templates/usecase_test.tmpl
 handlerTemplate: ./templates/handler.tmpl
+handlerTestTemplate: ./templates/handler_test.tmpl

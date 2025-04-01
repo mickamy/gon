@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 	"github.com/mickamy/gon/internal/templates"
 )
 
@@ -43,7 +43,7 @@ var Cmd = &cobra.Command{
 }
 
 func Generate(cfg *config.Config, args []string, domain string) error {
-	name := gon.Capitalize(args[0])
+	name := caseconv.Capitalize(args[0])
 	fields := parseFields(args[1:])
 
 	data := TemplateData{
@@ -77,7 +77,7 @@ func parseFields(raw []string) []Field {
 			continue
 		}
 		fields = append(fields, Field{
-			Name:     gon.Capitalize(parts[0]),
+			Name:     caseconv.Capitalize(parts[0]),
 			Type:     parts[1],
 			JSONName: parts[0],
 		})

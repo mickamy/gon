@@ -1,4 +1,4 @@
-package gon
+package caseconv
 
 import (
 	"regexp"

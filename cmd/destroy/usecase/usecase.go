@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 )
 
 var Cmd = &cobra.Command{
@@ -29,13 +29,13 @@ var Cmd = &cobra.Command{
 }
 
 func Destroy(cfg *config.Config, args []string, domain string) error {
-	name := gon.Capitalize(args[0])
+	name := caseconv.Capitalize(args[0])
 
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
-	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.SnakeCase(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", caseconv.SnakeCase(name)))
 	if err := os.Remove(outPath); err != nil {
 		return fmt.Errorf("⚠️ Failed to remove usecase file %q: %w", outPath, err)
 	}

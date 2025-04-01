@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 	"github.com/mickamy/gon/internal/templates"
 )
 
@@ -42,12 +42,12 @@ var Cmd = &cobra.Command{
 }
 
 func Generate(cfg *config.Config, args []string, domain string) error {
-	entity := gon.Capitalize(args[0])
+	entity := caseconv.Capitalize(args[0])
 	actions := args[1:]
 
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", entity)
-		domain = gon.Uncapitalize(entity)
+		domain = caseconv.Uncapitalize(entity)
 	}
 
 	data := TemplateData{
@@ -120,7 +120,7 @@ func parseAction(entity string, raw []string) []Action {
 	var actions []Action
 	for _, item := range raw {
 		actions = append(actions, Action{
-			Name:   gon.Capitalize(item),
+			Name:   caseconv.Capitalize(item),
 			Entity: entity,
 		})
 	}

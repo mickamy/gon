@@ -8,8 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 )
 
 type TemplateData struct {
@@ -41,18 +41,18 @@ func init() {
 }
 
 func Generate(cfg *config.Config, args []string, domain string) error {
-	name := gon.Capitalize(args[0])
+	name := caseconv.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
-		domain = gon.SnakeCase(name)
+		domain = caseconv.SnakeCase(name)
 	}
 
 	data := TemplateData{
 		Name:              name,
-		UncapitalizedName: gon.Uncapitalize(name),
+		UncapitalizedName: caseconv.Uncapitalize(name),
 	}
 
-	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.SnakeCase(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", caseconv.SnakeCase(name)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}

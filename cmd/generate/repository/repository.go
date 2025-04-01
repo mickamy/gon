@@ -9,8 +9,8 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 )
 
 type TemplateData struct {
@@ -45,7 +45,7 @@ func init() {
 }
 
 func Generate(cfg *config.Config, args []string, domain string) error {
-	name := gon.Capitalize(args[0])
+	name := caseconv.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
@@ -53,10 +53,10 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 
 	data := TemplateData{
 		EntityName:      name,
-		LowerEntityName: gon.Uncapitalize(name),
+		LowerEntityName: caseconv.Uncapitalize(name),
 		BasePackage:     cfg.BasePackage,
 		DatabasePackage: cfg.DatabasePackage,
-		DomainName:      gon.Uncapitalize(domain),
+		DomainName:      caseconv.Uncapitalize(domain),
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))

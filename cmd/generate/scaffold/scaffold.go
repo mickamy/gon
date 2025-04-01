@@ -11,8 +11,8 @@ import (
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
 	"github.com/mickamy/gon/cmd/generate/usecase"
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
@@ -53,11 +53,11 @@ var Cmd = &cobra.Command{
 		actions := []string{"list", "get", "create", "update", "delete"}
 		var usecaseFiles []string
 		for _, action := range actions {
-			pascal := gon.PascalCase(action + "_" + name)
+			pascal := caseconv.PascalCase(action + "_" + name)
 			if err := usecase.Generate(cfg, []string{pascal}, domain); err != nil {
 				return fmt.Errorf("usecase generation failed: %w", err)
 			}
-			snake := gon.SnakeCase(action + "_" + name)
+			snake := caseconv.SnakeCase(action + "_" + name)
 			usecaseFiles = append(usecaseFiles, snake)
 		}
 		fmt.Printf("✅ usecase:    %s\n", strings.Join(usecaseFiles, ", "))

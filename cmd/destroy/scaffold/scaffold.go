@@ -11,8 +11,8 @@ import (
 	"github.com/mickamy/gon/cmd/destroy/model"
 	"github.com/mickamy/gon/cmd/destroy/repository"
 	"github.com/mickamy/gon/cmd/destroy/usecase"
+	"github.com/mickamy/gon/internal/caseconv"
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
@@ -54,11 +54,11 @@ var Cmd = &cobra.Command{
 		actions := []string{"list", "get", "create", "update", "delete"}
 		var usecaseFiles []string
 		for _, action := range actions {
-			pascal := gon.PascalCase(action + "_" + name)
+			pascal := caseconv.PascalCase(action + "_" + name)
 			if err := usecase.Destroy(cfg, []string{pascal}, domain); err != nil {
 				return fmt.Errorf("usecase destroy failed: %w", err)
 			}
-			usecaseFiles = append(usecaseFiles, gon.SnakeCase(action+"_"+name))
+			usecaseFiles = append(usecaseFiles, caseconv.SnakeCase(action+"_"+name))
 		}
 		fmt.Printf("✅ usecase:    %s\n", strings.Join(usecaseFiles, ", "))
 

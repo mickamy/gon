@@ -33,12 +33,12 @@ func TestGenerateModel(t *testing.T) {
 	}()
 	_ = os.Chdir(tmp)
 
-	err := model.Generate(cfg, args)
+	err := model.Generate(cfg, args, "user")
 	if err != nil {
 		t.Fatalf("command failed: %v", err)
 	}
 
-	expectedPath := filepath.Join(tmp, "internal", "domain", "User", "model", "user_model.go")
+	expectedPath := filepath.Join(tmp, "internal", "domain", "user", "model", "user_model.go")
 	data, err := os.ReadFile(expectedPath)
 	if err != nil {
 		t.Fatalf("expected file not found: %v", err)

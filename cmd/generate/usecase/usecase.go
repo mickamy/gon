@@ -14,6 +14,7 @@ import (
 type TemplateData struct {
 	Name              string
 	UncapitalizedName string
+	DomainPackage     string
 }
 
 var Cmd = &cobra.Command{
@@ -49,6 +50,7 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	data := TemplateData{
 		Name:              name,
 		UncapitalizedName: caseconv.Uncapitalize(name),
+		DomainPackage:     cfg.DomainPackage(domain),
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", caseconv.SnakeCase(name)))

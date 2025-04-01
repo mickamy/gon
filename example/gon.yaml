@@ -9,4 +9,5 @@ fixtureTemplate: ./templates/fixture.tmpl
 repositoryTemplate: ./templates/repository.tmpl
 repositoryTestTemplate: ./templates/repository_test.tmpl
 usecaseTemplate: ./templates/usecase.tmpl
+usecaseTestTemplate: ./templates/usecase_test.tmpl
 handlerTemplate: ./templates/handler.tmpl

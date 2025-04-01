@@ -1,11 +1,24 @@
 # gon
 
-> Scaffold models, usecases, and handlers for Go apps with an opinionated directory layout.
+> Scaffold models, usecases, and handlers for Go apps with an opinionated directory layout — just like Rails, but for Go.
+
+---
+
+## ✨ Rails-like Developer Experience
+
+Inspired by the Rails philosophy of *convention over configuration*, `gon` lets you scaffold everything you need for a domain entity — model, repository, usecase, and handler — with a single command.
+
+```bash
+gon g scaffold User name:string email:string
+```
+
+This generates fully structured code under `internal/domain/user/`, just like `rails g scaffold` — but in idiomatic Go.
 
 ---
 
 ## ✨ Features
 
+- Rails-style generators for Go projects
 - Generate boilerplate code for Clean Architecture
 - Support for models, repositories, usecases, and handlers
 - Enforces consistent directory structure
@@ -49,7 +62,10 @@ This creates a `gon.yaml` file with default settings. You can tweak output paths
 gon install
 ```
 
-This command generates the database file and prepares templates required for scaffolding.
+This command generates the database file and prepares templates required for scaffolding, including:
+
+- Embedded templates for model, repository, usecase, handler
+- Includes lightweight test helpers like `httptestutil/request.go`, generated during install for better testing experience.
 
 > 💡 Make sure to run this before using `gon g` or `gon d`.
 
@@ -83,7 +99,7 @@ gon g handler User list create
 gon g scaffold User name:string email:string
 ```
 
-This generates model, repository, usecase, and handler in one shot.
+This generates model, repository, usecase, handler, and fixture in one shot.
 
 ### Destroy everything
 
@@ -101,6 +117,8 @@ This deletes generated files for the given domain entity.
 internal/
 └── domain/
     └── user/
+        └── fixture/
+        │   └── user.go
         ├── model/
         │   └── user_model.go
         ├── usecase/
@@ -113,9 +131,35 @@ internal/
         │   └── user_repository.go
         └── handler/
             └── user_handler.go
+test/
+└── httptestutil/
+    └── request.go
 ```
 
 > Each subdirectory under `domain/{name}` is a separate package.
+
+---
+
+## 🧪 Testing & Fixtures
+
+When generating code, `gon` also prepares test helpers to improve DX:
+
+- `httptestutil.RequestBuilder` to build and test Echo requests
+- Zero-value based fixtures with `TODO` comments for easy customization
+
+```go
+package fixture
+
+func User(setter func(*model.User)) model.User {
+  m := model.User{
+    // TODO: fill in default values
+  }
+  if setter != nil {
+    setter(&m)
+  }
+  return m
+}
+```
 
 ---
 
@@ -123,6 +167,14 @@ internal/
 
 Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults
 during `gon install`.
+
+---
+
+## 📚 Example Project
+
+You can find a working example project using `gon` under the [`example/`](./example) directory.
+
+This example demonstrates how the generated code looks and how to structure your application using `gon`'s opinionated layout. It’s a great starting point to explore and adapt into your own Go project.
 
 ---
 

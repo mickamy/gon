@@ -6,31 +6,39 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mickamy/gon/cmd"
+	"github.com/mickamy/gon/cmd/generate/model"
+	"github.com/mickamy/gon/internal/config"
 )
 
 func TestGenerateModel(t *testing.T) {
 	t.Parallel()
-
 	tmp := t.TempDir()
+
+	cfg := config.New(config.Config{
+		BasePackage:        "example.com/test/project",
+		OutputDir:          "internal/domain",
+		DefaultDriver:      config.DriverGorm,
+		DefaultWeb:         config.WebEcho,
+		DatabasePackage:    "example.com/test/project/internal/infra/storage/database",
+		ModelTemplate:      "defaults/model.tmpl",
+		RepositoryTemplate: "defaults/repository_gorm.tmpl",
+	})
+
+	args := []string{"User", "name:string", "age:int"}
+
+	// change working directory to temp
 	oldWd, _ := os.Getwd()
-	defer func(dir string) {
-		err := os.Chdir(dir)
-		if err != nil {
-			t.Fatalf("failed to change directory: %v", err)
-		}
-	}(oldWd)
+	defer func() {
+		_ = os.Chdir(oldWd)
+	}()
 	_ = os.Chdir(tmp)
 
-	root := cmd.Cmd
-	root.SetArgs([]string{"generate", "model", "User", "name:string", "age:int"})
-
-	err := root.Execute()
+	err := model.GenerateModel(cfg, args)
 	if err != nil {
 		t.Fatalf("command failed: %v", err)
 	}
 
-	expectedPath := filepath.Join(tmp, "internal", "domain", "model", "user_model.go")
+	expectedPath := filepath.Join(tmp, "internal", "domain", "User", "model", "user_model.go")
 	data, err := os.ReadFile(expectedPath)
 	if err != nil {
 		t.Fatalf("expected file not found: %v", err)

@@ -1,0 +1,7 @@
+basePackage: github.com/mickamy/gon
+outputDir: internal/domain
+defaultDriver: gorm
+defaultWeb: echo
+databasePackage: github.com/mickamy/gon/internal/infra/storage/database
+modelTemplate: ./templates/model.tmpl
+repositoryTemplate: ./templates/repository.tmpl

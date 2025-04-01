@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/internal/gon"
 	"github.com/mickamy/gon/templates"
 )
 
@@ -17,30 +16,38 @@ var Cmd = &cobra.Command{
 	Use:   "install",
 	Short: "Generate database file, install dependencies, and prepare templates",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if err := writeDatabaseFile(); err != nil {
-			fmt.Printf("💥 Failed to generate database file: %v\n", err)
-			return err
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-
-		fmt.Println("📁 Creating driver-specific templates...")
-		if err := writeTemplateFiles(gon.Config.DefaultDriver); err != nil {
-			fmt.Printf("⚠️ Failed to create templates: %v\n", err)
-		}
-
-		fmt.Println("📦 Installing gomock...")
-		if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
-			fmt.Println("⚠️ Failed to install gomock:", err)
-		} else {
-			fmt.Println("✅ gomock installed successfully.")
-		}
-
-		return nil
+		return RunInstall(cfg)
 	},
 }
 
-func writeDatabaseFile() error {
-	driver := gon.Config.DefaultDriver
-	path := filepath.Join(gon.Config.DatabasePackagePath(), driver.String()+".go")
+func RunInstall(cfg *config.Config) error {
+	if err := writeDatabaseFile(cfg); err != nil {
+		fmt.Printf("💥 Failed to generate database file: %v\n", err)
+		return err
+	}
+
+	fmt.Println("📁 Creating driver-specific templates...")
+	if err := writeTemplateFiles(cfg); err != nil {
+		fmt.Printf("⚠️ Failed to create templates: %v\n", err)
+	}
+
+	fmt.Println("📦 Installing gomock...")
+	if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
+		fmt.Println("⚠️ Failed to install gomock:", err)
+	} else {
+		fmt.Println("✅ gomock installed successfully.")
+	}
+
+	return nil
+}
+
+func writeDatabaseFile(cfg *config.Config) error {
+	driver := cfg.DefaultDriver
+	path := filepath.Join(cfg.DatabasePackagePath(), driver.String()+".go")
 	fmt.Printf("🧱 Generating database file: %s...\n", path)
 
 	if _, err := os.Stat(path); err == nil {
@@ -67,18 +74,18 @@ func writeDatabaseFile() error {
 	return nil
 }
 
-func writeTemplateFiles(driver config.Driver) error {
+func writeTemplateFiles(cfg *config.Config) error {
 	templateFiles := map[string]func() string{
-		gon.Config.ModelTemplate: func() string {
-			switch driver {
+		cfg.ModelTemplate: func() string {
+			switch cfg.DefaultDriver {
 			case config.DriverGorm:
 				return "defaults/model.tmpl"
 			default:
 				return "defaults/model.tmpl"
 			}
 		},
-		gon.Config.RepositoryTemplate: func() string {
-			switch driver {
+		cfg.RepositoryTemplate: func() string {
+			switch cfg.DefaultDriver {
 			case config.DriverGorm:
 				return "defaults/repository_gorm.tmpl"
 			default:
@@ -87,13 +94,14 @@ func writeTemplateFiles(driver config.Driver) error {
 		},
 	}
 
-	for destPath, embedPath := range templateFiles {
+	for destPath, embedPathFn := range templateFiles {
+		embedPath := embedPathFn()
 		if _, err := os.Stat(destPath); err == nil {
 			fmt.Printf("📄 %s already exists. Skipping.\n", destPath)
 			continue
 		}
 
-		bytes, err := templates.DefaultFS.ReadFile(embedPath())
+		bytes, err := templates.DefaultFS.ReadFile(embedPath)
 		if err != nil {
 			fmt.Printf("⚠️ Failed to load embedded template %q: %v\n", embedPath, err)
 			continue

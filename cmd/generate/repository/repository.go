@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/config"
 	"github.com/mickamy/gon/internal/gon"
 	"github.com/mickamy/gon/templates"
 )
@@ -26,26 +27,11 @@ var Cmd = &cobra.Command{
 	Short: "Generate a repository to retrieve domain model",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name := gon.Capitalize(args[0])
-		if domain == "" {
-			fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-
-		data := TemplateData{
-			EntityName:      name,
-			LowerEntityName: gon.Uncapitalize(name),
-			BasePackage:     gon.Config.BasePackage,
-			DatabasePackage: gon.Config.DatabasePackage,
-			DomainName:      gon.Uncapitalize(domain),
-		}
-
-		fmt.Println("📄 Generating repository file...")
-		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))); err != nil {
-			return err
-		}
-
-		fmt.Println("✅ Repository file generated successfully.")
-		return nil
+		return GenerateRepository(cfg, args)
 	},
 }
 
@@ -53,6 +39,31 @@ var domain string
 
 func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
+}
+
+func GenerateRepository(cfg *config.Config, args []string) error {
+	name := gon.Capitalize(args[0])
+	if domain == "" {
+		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
+		domain = name
+	}
+
+	data := TemplateData{
+		EntityName:      name,
+		LowerEntityName: gon.Uncapitalize(name),
+		BasePackage:     cfg.BasePackage,
+		DatabasePackage: cfg.DatabasePackage,
+		DomainName:      gon.Uncapitalize(domain),
+	}
+
+	fmt.Println("📄 Generating repository file...")
+	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
+	if err := renderToFile(data, outPath); err != nil {
+		return err
+	}
+
+	fmt.Println("✅ Repository file generated successfully.")
+	return nil
 }
 
 func renderToFile(data TemplateData, outPath string) error {

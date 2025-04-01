@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/internal/config"
 	"github.com/mickamy/gon/internal/gon"
 	"github.com/mickamy/gon/templates"
 )
@@ -29,26 +30,35 @@ var Cmd = &cobra.Command{
 	Short: "Generate a domain model",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name := gon.Capitalize(args[0])
-		fields := parseFields(args[1:])
-
-		data := TemplateData{
-			EntityName: name,
-			Fields:     fields,
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-
-		fmt.Println("📄 Generating model file...")
-		if domain == "" {
-			fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
-			domain = name
-		}
-		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))); err != nil {
-			return err
-		}
-
-		fmt.Println("✅ Model file generated successfully.")
-		return nil
+		return GenerateModel(cfg, args)
 	},
+}
+
+func GenerateModel(cfg *config.Config, args []string) error {
+	name := gon.Capitalize(args[0])
+	fields := parseFields(args[1:])
+
+	data := TemplateData{
+		EntityName: name,
+		Fields:     fields,
+	}
+
+	fmt.Println("📄 Generating model file...")
+	if domain == "" {
+		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
+		domain = name
+	}
+	outPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
+	if err := renderToFile(cfg, data, outPath); err != nil {
+		return err
+	}
+
+	fmt.Println("✅ Model file generated successfully.")
+	return nil
 }
 
 var domain string
@@ -73,8 +83,8 @@ func parseFields(raw []string) []Field {
 	return fields
 }
 
-func renderToFile(data TemplateData, outPath string) error {
-	tmplFile := gon.Config.ModelTemplate
+func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
+	tmplFile := cfg.ModelTemplate
 
 	var bytes []byte
 	var err error

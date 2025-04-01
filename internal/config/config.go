@@ -2,9 +2,11 @@ package config
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 type Driver string
@@ -42,6 +44,7 @@ func (c Config) DatabasePackagePath() string {
 	return strings.TrimPrefix(p, "/")
 }
 
+// Load reads the config from gon.yaml
 func Load() (*Config, error) {
 	viper.SetConfigName("gon")
 	viper.SetConfigType("yaml")
@@ -59,5 +62,19 @@ func Load() (*Config, error) {
 	fmt.Printf("Driver: %s\n", cfg.DefaultDriver.String())
 	fmt.Printf("Web framework: %s\n", cfg.DefaultWeb.String())
 
+	return &cfg, nil
+}
+
+// New allows injecting a Config manually (e.g. for tests)
+func New(c Config) *Config {
+	return &c
+}
+
+// LoadFromReader allows loading Config from any io.Reader (e.g. for testing)
+func LoadFromReader(r io.Reader) (*Config, error) {
+	var cfg Config
+	if err := yaml.NewDecoder(r).Decode(&cfg); err != nil {
+		return nil, fmt.Errorf("failed to decode config: %w", err)
+	}
 	return &cfg, nil
 }

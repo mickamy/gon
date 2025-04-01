@@ -118,7 +118,7 @@ internal/
 └── domain/
     └── user/
         └── fixture/
-        │   └── user.go
+        │   └── user_fixture.go
         ├── model/
         │   └── user_model.go
         ├── usecase/

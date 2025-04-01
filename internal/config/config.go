@@ -52,6 +52,7 @@ const (
 type Config struct {
 	BasePackage            string       `mapstructure:"basePackage"`
 	OutputDir              string       `mapstructure:"outputDir"`
+	TestUtilDir            string       `mapstructure:"testUtilDir"`
 	DBDriver               DBDriver     `mapstructure:"dbDriver"`
 	WebFramework           WebFramework `mapstructure:"webFramework"`
 	DatabasePackage        string       `mapstructure:"databasePackage"`

@@ -26,13 +26,18 @@ var Cmd = &cobra.Command{
 }
 
 func RunInstall(cfg *config.Config) error {
-	if err := writeDatabaseFile(cfg); err != nil {
+	if err := copyDatabaseFile(cfg); err != nil {
 		fmt.Printf("💥 Failed to generate database file: %v\n", err)
 		return err
 	}
 
+	if err := copyTestUtilFiles(cfg); err != nil {
+		fmt.Printf("💥 Failed to generate test util files: %v\n", err)
+		return err
+	}
+
 	fmt.Println("📁 Creating templates...")
-	if err := writeTemplateFiles(cfg); err != nil {
+	if err := copyTemplateFiles(cfg); err != nil {
 		fmt.Printf("⚠️ Failed to create templates: %v\n", err)
 	}
 
@@ -46,7 +51,7 @@ func RunInstall(cfg *config.Config) error {
 	return nil
 }
 
-func writeDatabaseFile(cfg *config.Config) error {
+func copyDatabaseFile(cfg *config.Config) error {
 	driver := cfg.DBDriver
 	path := filepath.Join(cfg.DatabasePackagePath(), driver.String()+".go")
 	fmt.Printf("🧱 Generating database file: %s...\n", path)
@@ -56,26 +61,40 @@ func writeDatabaseFile(cfg *config.Config) error {
 		return nil
 	}
 
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return err
-	}
-
-	var content string
-	switch driver {
-	case config.DBDriverGorm:
-		content = gormFileContent
-	default:
-		return fmt.Errorf("❌ Failed to generate database file: unsupported driver %q", driver)
-	}
-
-	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+	if err := templates.Copy("database/"+driver.String()+".go.tmpl", path); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func writeTemplateFiles(cfg *config.Config) error {
+func copyTestUtilFiles(cfg *config.Config) error {
+	testUtilFiles := map[string]string{
+		filepath.Join(cfg.TestUtilDir, "httptestutil", "request.go"): "defaults/httptestutil/request.go.tmpl",
+	}
+
+	switch cfg.WebFramework {
+	case config.WebFrameworkEcho:
+		testUtilFiles[filepath.Join(cfg.TestUtilDir, "httptestutil", "echo.go")] = "defaults/httptestutil/echo.go.tmpl"
+	}
+
+	for destPath, embedPath := range testUtilFiles {
+		if _, err := os.Stat(destPath); err == nil {
+			fmt.Printf("📄 %s already exists. Skipping.\n", destPath)
+			continue
+		}
+
+		if err := templates.Copy(embedPath, destPath); err != nil {
+			return err
+		}
+
+		fmt.Printf("✅ Created template: %s\n", destPath)
+	}
+
+	return nil
+}
+
+func copyTemplateFiles(cfg *config.Config) error {
 	templateFiles := map[string]func() string{
 		cfg.ModelTemplate: func() string {
 			switch cfg.DBDriver {
@@ -143,17 +162,7 @@ func writeTemplateFiles(cfg *config.Config) error {
 			continue
 		}
 
-		bytes, err := templates.DefaultFS.ReadFile(embedPath)
-		if err != nil {
-			fmt.Printf("⚠️ Failed to load embedded template %q: %v\n", embedPath, err)
-			continue
-		}
-
-		if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
-			return err
-		}
-
-		if err := os.WriteFile(destPath, bytes, 0644); err != nil {
+		if err := templates.Copy(embedPath, destPath); err != nil {
 			return err
 		}
 
@@ -162,17 +171,3 @@ func writeTemplateFiles(cfg *config.Config) error {
 
 	return nil
 }
-
-const gormFileContent = `package database
-
-import (
-	"errors"
-
-	"gorm.io/gorm"
-)
-
-var ErrRecordNotFound = errors.New("record not found")
-
-// DB is a wrapper of *gorm.DB
-type DB struct{ *gorm.DB }
-`

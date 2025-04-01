@@ -15,11 +15,13 @@ import (
 
 const defaultConfigTemplate = `basePackage: {{.BasePackage}}
 outputDir: {{.OutputDir}}
+testUtilDir: ./test
 dbDriver: {{.DBDriver}}
 webFramework: {{.WebFramework}}
 databasePackage: {{.DatabasePackage}}
 modelTemplate: ./templates/model.tmpl
 modelTestTemplate: ./templates/model_test.tmpl
+fixtureTemplate: ./templates/fixture.tmpl
 repositoryTemplate: ./templates/repository.tmpl
 repositoryTestTemplate: ./templates/repository_test.tmpl
 usecaseTemplate: ./templates/usecase.tmpl

@@ -35,12 +35,23 @@ This installs `gon` to `$GOTOOLDIR/bin` (usually `$HOME/go/bin`).
 
 ## 📦 Initial Setup
 
+### Step 1: Create configuration file
+
+```bash
+gon init
+```
+
+This creates a `gon.yaml` file with default settings. You can tweak output paths, package names, and template locations.
+
+### Step 2: Install templates and dependencies
+
 ```bash
 gon install
 ```
 
 This command generates the database file and prepares templates required for scaffolding.
-Make sure to run this before using `gon g` or `gon d`.
+
+> 💡 Make sure to run this before using `gon g` or `gon d`.
 
 ---
 
@@ -93,7 +104,11 @@ internal/
         ├── model/
         │   └── user_model.go
         ├── usecase/
-        │   └── create_user_use_case.go
+        │   ├── create_user_use_case.go
+        │   ├── get_user_use_case.go
+        │   ├── list_user_use_case.go
+        │   ├── update_user_use_case.go
+        │   └── delete_user_use_case.go
         ├── repository/
         │   └── user_repository.go
         └── handler/

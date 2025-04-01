@@ -93,6 +93,9 @@ func writeTemplateFiles(cfg *config.Config) error {
 				return "defaults/model_test.tmpl"
 			}
 		},
+		cfg.FixtureTemplate: func() string {
+			return "defaults/fixture.tmpl"
+		},
 		cfg.RepositoryTemplate: func() string {
 			switch cfg.DBDriver {
 			case config.DBDriverGorm:

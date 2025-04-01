@@ -33,6 +33,17 @@ This installs `gon` to `$GOTOOLDIR/bin` (usually `$HOME/go/bin`).
 
 ---
 
+## 📦 Initial Setup
+
+```bash
+gon install
+```
+
+This command generates the database file and prepares templates required for scaffolding.
+Make sure to run this before using `gon g` or `gon d`.
+
+---
+
 ## 🧪 Usage
 
 ### Generate a domain model
@@ -52,8 +63,24 @@ gon g usecase CreateUser
 ### Generate a handler
 
 ```bash
-gon g handler User
+gon g handler User list create
 ```
+
+### Scaffold everything
+
+```bash
+gon g scaffold User name:string email:string
+```
+
+This generates model, repository, usecase, and handler in one shot.
+
+### Destroy everything
+
+```bash
+gon d scaffold User
+```
+
+This deletes generated files for the given domain entity.
 
 ---
 
@@ -79,8 +106,7 @@ internal/
 
 ## 🛠 Template Driven
 
-Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults
-during `gon install`.
+Templates are embedded using Go 1.16+ `embed` package. You can customize them by copying from the embedded defaults during `gon install`.
 
 ---
 

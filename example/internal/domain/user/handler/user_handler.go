@@ -8,12 +8,12 @@ import (
 	"github.com/mickamy/gon-example/internal/domain/user/usecase"
 )
 
-type GetUserHandler echo.HandlerFunc
+type ListUserHandler echo.HandlerFunc
 
-func GetUser(uc usecase.GetUser) GetUserHandler {
+func ListUser(uc usecase.ListUser) ListUserHandler {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		output, err := uc.Do(ctx, usecase.GetUserInput{})
+		output, err := uc.Do(ctx, usecase.ListUserInput{})
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
@@ -21,12 +21,12 @@ func GetUser(uc usecase.GetUser) GetUserHandler {
 	}
 }
 
-type ListUserHandler echo.HandlerFunc
+type GetUserHandler echo.HandlerFunc
 
-func ListUser(uc usecase.ListUser) ListUserHandler {
+func GetUser(uc usecase.GetUser) GetUserHandler {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
-		output, err := uc.Do(ctx, usecase.ListUserInput{})
+		output, err := uc.Do(ctx, usecase.GetUserInput{})
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}

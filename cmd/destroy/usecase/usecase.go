@@ -32,7 +32,7 @@ func Destroy(cfg *config.Config, args []string) error {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
-	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.ToSnakeCase(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.SnakeCase(name)))
 	if err := os.Remove(outPath); err != nil {
 		return fmt.Errorf("⚠️ Failed to remove usecase file %q: %w", outPath, err)
 	}

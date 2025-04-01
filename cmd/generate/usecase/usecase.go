@@ -44,7 +44,7 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
-		domain = gon.ToSnakeCase(name)
+		domain = gon.SnakeCase(name)
 	}
 
 	data := TemplateData{
@@ -52,7 +52,7 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 		UncapitalizedName: gon.Uncapitalize(name),
 	}
 
-	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.ToSnakeCase(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.SnakeCase(name)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}

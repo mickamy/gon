@@ -6,14 +6,13 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 
 	"github.com/mickamy/gon/cmd/generate/handler"
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
 	"github.com/mickamy/gon/cmd/generate/usecase"
 	"github.com/mickamy/gon/internal/config"
+	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
@@ -51,15 +50,14 @@ var Cmd = &cobra.Command{
 		fmt.Printf("✅ repository: %s\n", filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name))))
 
 		// --- Usecase ---
-		actions := []string{"create", "get", "update", "delete"}
+		actions := []string{"list", "get", "create", "update", "delete"}
 		var usecaseFiles []string
 		for _, action := range actions {
-			caser := cases.Title(language.English)
-			ucName := caser.String(action)
-			if err := usecase.Generate(cfg, []string{ucName}, domain); err != nil {
+			pascal := gon.PascalCase(action + "_" + name)
+			if err := usecase.Generate(cfg, []string{pascal}, domain); err != nil {
 				return fmt.Errorf("usecase generation failed: %w", err)
 			}
-			snake := strings.ToLower(action + "_" + name)
+			snake := gon.SnakeCase(action + "_" + name)
 			usecaseFiles = append(usecaseFiles, snake)
 		}
 		fmt.Printf("✅ usecase:    %s\n", strings.Join(usecaseFiles, ", "))

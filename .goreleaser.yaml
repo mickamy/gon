@@ -1,0 +1,34 @@
+project_name: gon
+release:
+  github:
+    owner: mickamy
+    name: gon
+  draft: false
+  prerelease: "false"
+
+builds:
+  - id: gon
+    main: ./main.go
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    ldflags:
+      - "-X github.com/mickamy/gon/cmd/version.Version={{.Version}}"
+    binary: gon
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+      - '^chore:'
+      - '^docs:'
+      - '^test:'

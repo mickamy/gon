@@ -20,7 +20,11 @@
 go install github.com/mickamy/gon@latest
 ```
 
-Make sure `$GOPATH/bin` is in your `$PATH`.
+Or if you prefer to use `go get tool`:
+
+```
+go get -tool github.com/mickamy/gon
+```
 
 ---
 

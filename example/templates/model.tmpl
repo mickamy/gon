@@ -1,6 +1,7 @@
 package model
 
-type {{.EntityName}} struct {
+type {{.Entity}} struct {
+    ID string
     {{- range .Fields}}
     {{.Name}} {{.Type}}
     {{- end}}

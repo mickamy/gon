@@ -13,11 +13,11 @@ import (
 )
 
 type TemplateData struct {
-	EntityName      string
-	LowerEntityName string
+	Entity          string
+	LowerEntity     string
 	BasePackage     string
 	DatabasePackage string
-	DomainName      string
+	Domain          string
 }
 
 var Cmd = &cobra.Command{
@@ -51,11 +51,11 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	}
 
 	data := TemplateData{
-		EntityName:      name,
-		LowerEntityName: caseconv.Uncapitalize(name),
+		Entity:          name,
+		LowerEntity:     caseconv.Uncapitalize(name),
 		BasePackage:     cfg.BasePackage,
 		DatabasePackage: cfg.DatabasePackage,
-		DomainName:      caseconv.Uncapitalize(domain),
+		Domain:          caseconv.Uncapitalize(domain),
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))

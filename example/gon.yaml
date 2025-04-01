@@ -4,7 +4,9 @@ dbDriver: gorm
 webFramework: echo
 databasePackage: github.com/mickamy/gon-example/internal/infra/storage/database
 modelTemplate: ./templates/model.tmpl
+modelTestTemplate: ./templates/model_test.tmpl
 fixtureTemplate: ./templates/fixture.tmpl
 repositoryTemplate: ./templates/repository.tmpl
+repositoryTestTemplate: ./templates/repository_test.tmpl
 usecaseTemplate: ./templates/usecase.tmpl
 handlerTemplate: ./templates/handler.tmpl

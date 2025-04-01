@@ -7,37 +7,37 @@ import (
 
 	"gorm.io/gorm"
 
-    "{{.BasePackage}}/internal/domain/{{.DomainName}}/model"
+    "{{.BasePackage}}/internal/domain/{{.Domain}}/model"
 	"{{.DatabasePackage}}"
 )
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
-type {{.EntityName}} interface {
-    List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.EntityName}}, error)
-	Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error)
-	Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error)
-	Create(ctx context.Context, m *model.{{.EntityName}}) error
-	Update(ctx context.Context, m *model.{{.EntityName}}) error
+type {{.Entity}} interface {
+    List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.Entity}}, error)
+	Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.Entity}}, error)
+	Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.Entity}}, error)
+	Create(ctx context.Context, m *model.{{.Entity}}) error
+	Update(ctx context.Context, m *model.{{.Entity}}) error
 	Delete(ctx context.Context, id string) error
-	WithTx(tx *database.DB) {{.EntityName}}
+	WithTx(tx *database.DB) {{.Entity}}
 }
 
-type {{.LowerEntityName}} struct {
+type {{.LowerEntity}} struct {
     db *database.DB
 }
 
-func New{{.EntityName}}(db *database.DB) {{.EntityName}} {
-    return &{{.LowerEntityName}}{db: db}
+func New{{.Entity}}(db *database.DB) {{.Entity}} {
+    return &{{.LowerEntity}}{db: db}
 }
 
-func (repo *{{.LowerEntityName}}) List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.EntityName}}, error) {
-    var m []model.{{.EntityName}}
+func (repo *{{.LowerEntity}}) List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.Entity}}, error) {
+    var m []model.{{.Entity}}
     err := repo.db.WithContext(ctx).Scopes(scopes...).Find(&m).Error
     return m, err
 }
 
-func (repo *{{.LowerEntityName}}) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error) {
-    var m model.{{.EntityName}}
+func (repo *{{.LowerEntity}}) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.Entity}}, error) {
+    var m model.{{.Entity}}
 	err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return m, errors.Join(fmt.Errorf("%w: id=[%s]", database.ErrRecordNotFound, id), err)
@@ -45,8 +45,8 @@ func (repo *{{.LowerEntityName}}) Get(ctx context.Context, id string, scopes ...
 	return m, err
 }
 
-func (repo *{{.LowerEntityName}}) Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error) {
-    var m model.{{.EntityName}}
+func (repo *{{.LowerEntity}}) Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.Entity}}, error) {
+    var m model.{{.Entity}}
     if err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error; err != nil {
         if errors.Is(err, gorm.ErrRecordNotFound) {
             return nil, nil
@@ -56,18 +56,18 @@ func (repo *{{.LowerEntityName}}) Find(ctx context.Context, id string, scopes ..
     return &m, nil
 }
 
-func (repo *{{.LowerEntityName}}) Create(ctx context.Context, m *model.{{.EntityName}}) error {
+func (repo *{{.LowerEntity}}) Create(ctx context.Context, m *model.{{.Entity}}) error {
     return repo.db.WithContext(ctx).Create(&m).Error
 }
 
-func (repo *{{.LowerEntityName}}) Update(ctx context.Context, m *model.{{.EntityName}}) error {
+func (repo *{{.LowerEntity}}) Update(ctx context.Context, m *model.{{.Entity}}) error {
     return repo.db.WithContext(ctx).Save(m).Error
 }
 
-func (repo *{{.LowerEntityName}}) Delete(ctx context.Context, id string) error {
-    return repo.db.WithContext(ctx).Delete(&model.{{.EntityName}}{}, id).Error
+func (repo *{{.LowerEntity}}) Delete(ctx context.Context, id string) error {
+    return repo.db.WithContext(ctx).Delete(&model.{{.Entity}}{}, id).Error
 }
 
-func (repo *{{.LowerEntityName}}) WithTx(tx *database.DB) {{.EntityName}} {
-    return &{{.LowerEntityName}}{db: tx}
+func (repo *{{.LowerEntity}}) WithTx(tx *database.DB) {{.Entity}} {
+    return &{{.LowerEntity}}{db: tx}
 }

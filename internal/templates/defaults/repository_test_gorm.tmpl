@@ -1,0 +1,136 @@
+package repository_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
+
+	"{{.BasePackage}}/internal/domain/{{.Domain}}/fixture"
+	"{{.BasePackage}}/internal/domain/{{.Domain}}/model"
+	"{{.BasePackage}}/internal/domain/{{.Domain}}/repository"
+	"{{.DatabasePackage}}"
+)
+
+func Test{{.Entity}}_List(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	ms := []model.{{.Entity}}{
+		fixture.{{.Entity}}(nil),
+		fixture.{{.Entity}}(nil),
+		fixture.{{.Entity}}(nil),
+	}
+	require.NoError(t, db.WithContext(ctx).Create(&ms).Error)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	got, err := sut.List(ctx)
+
+	// assert
+	require.NoError(t, err)
+	require.Len(t, got, len(ms))
+}
+
+func Test{{.Entity}}_Get(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	m := fixture.{{.Entity}}(nil)
+	require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	got, err := sut.Get(ctx, m.ID)
+
+	// assert
+	require.NoError(t, err)
+	require.Equal(t, m.ID, got.ID)
+}
+
+func Test{{.Entity}}_Find(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	m := fixture.{{.Entity}}(nil)
+	require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	got, err := sut.Find(ctx, m.ID)
+
+	// assert
+	require.NoError(t, err)
+	require.Equal(t, m.ID, got.ID)
+}
+
+func Test{{.Entity}}_Create(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	m := fixture.{{.Entity}}(nil)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	err := sut.Create(ctx, &m)
+
+	// assert
+	require.NoError(t, err)
+	require.NotEmpty(t, m.ID)
+}
+
+func Test{{.Entity}}_Update(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	m := fixture.{{.Entity}}(nil)
+	require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	m.Name = "Updated Name"
+	err := sut.Update(ctx, &m)
+
+	// assert
+	require.NoError(t, err)
+	var got model.{{.Entity}}
+	require.NoError(t, db.WithContext(ctx).First(&got, m.ID).Error)
+	require.Equal(t, m.ID, got.ID)
+	require.Equal(t, m.Name, got.Name)
+}
+
+func Test{{.Entity}}_Delete(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+	db := initDB(t)
+	m := fixture.{{.Entity}}(nil)
+	require.NoError(t, db.WithContext(ctx).Create(&m).Error)
+
+	// act
+	sut := repository.New{{.Entity}}(db)
+	err := sut.Delete(ctx, m.ID)
+
+	// assert
+	require.NoError(t, err)
+	var got model.{{.Entity}}
+	err = db.WithContext(ctx).First(&got, m.ID).Error
+	require.ErrorIs(t, err, gorm.ErrRecordNotFound)
+}
+
+func initDB(t *testing.T) *database.DB {
+	// Initialize the database connection here
+	// This is a placeholder, replace with actual DB initialization code
+	return &database.DB{}
+}

@@ -18,8 +18,8 @@ type Field struct {
 }
 
 type TemplateData struct {
-	EntityName string
-	Fields     []Field
+	Entity string
+	Fields []Field
 }
 
 var Cmd = &cobra.Command{
@@ -44,8 +44,8 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	fields := parseFields(args[1:])
 
 	data := TemplateData{
-		EntityName: name,
-		Fields:     fields,
+		Entity: name,
+		Fields: fields,
 	}
 
 	if domain == "" {

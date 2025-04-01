@@ -8,6 +8,7 @@ import (
 
 	"github.com/mickamy/gon/cmd/generate"
 	initCmd "github.com/mickamy/gon/cmd/init"
+	"github.com/mickamy/gon/cmd/install"
 )
 
 var Cmd = &cobra.Command{
@@ -17,8 +18,9 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
-	Cmd.AddCommand(initCmd.Cmd)
 	Cmd.AddCommand(generate.Cmd)
+	Cmd.AddCommand(initCmd.Cmd)
+	Cmd.AddCommand(install.Cmd)
 }
 
 func Execute() {

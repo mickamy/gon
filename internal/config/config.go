@@ -79,9 +79,6 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	fmt.Printf("DBDriver: %s\n", cfg.DBDriver.String())
-	fmt.Printf("Web framework: %s\n", cfg.WebFramework.String())
-
 	return &cfg, nil
 }
 

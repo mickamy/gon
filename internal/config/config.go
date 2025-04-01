@@ -58,11 +58,16 @@ type Config struct {
 	ModelTemplate      string       `mapstructure:"modelTemplate"`
 	RepositoryTemplate string       `mapstructure:"repositoryTemplate"`
 	UsecaseTemplate    string       `mapstructure:"usecaseTemplate"`
+	HandlerTemplate    string       `mapstructure:"handlerTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {
 	p := strings.TrimPrefix(c.DatabasePackage, c.BasePackage)
 	return strings.TrimPrefix(p, "/")
+}
+
+func (c Config) DomainPackage(domain string) string {
+	return c.BasePackage + "/" + c.OutputDir + "/" + domain
 }
 
 // Load reads the config from gon.yaml

@@ -1,4 +1,4 @@
-package model
+package handler
 
 import (
 	"fmt"
@@ -14,20 +14,19 @@ import (
 	"github.com/mickamy/gon/templates"
 )
 
-type Field struct {
-	Name     string
-	Type     string
-	JSONName string
+type Action struct {
+	Name   string
+	Entity string
 }
 
 type TemplateData struct {
-	EntityName string
-	Fields     []Field
+	Actions        []Action
+	UsecasePackage string
 }
 
 var Cmd = &cobra.Command{
-	Use:   "model [name] [fields]",
-	Short: "Generate a domain model",
+	Use:   "handler [entity] [actions]",
+	Short: "Generate a handler to handle HTTP requests",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
@@ -39,25 +38,26 @@ var Cmd = &cobra.Command{
 }
 
 func Generate(cfg *config.Config, args []string) error {
-	name := gon.Capitalize(args[0])
-	fields := parseFields(args[1:])
+	entity := gon.Capitalize(args[0])
+	actions := args[1:]
+
+	fmt.Println("📄 Generating handler file...")
+	if domain == "" {
+		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", entity)
+		domain = gon.Uncapitalize(entity)
+	}
 
 	data := TemplateData{
-		EntityName: name,
-		Fields:     fields,
+		Actions:        parseAction(entity, actions),
+		UsecasePackage: cfg.DomainPackage(domain) + "/usecase",
 	}
 
-	fmt.Println("📄 Generating model file...")
-	if domain == "" {
-		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
-		domain = name
-	}
-	outPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(entity)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}
 
-	fmt.Println("✅ Model file generated successfully.")
+	fmt.Println("✅ Handler file generated successfully.")
 	return nil
 }
 
@@ -67,24 +67,8 @@ func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
 }
 
-func parseFields(raw []string) []Field {
-	var fields []Field
-	for _, item := range raw {
-		parts := strings.Split(item, ":")
-		if len(parts) != 2 {
-			continue
-		}
-		fields = append(fields, Field{
-			Name:     gon.Capitalize(parts[0]),
-			Type:     parts[1],
-			JSONName: parts[0],
-		})
-	}
-	return fields
-}
-
 func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
-	tmplFile := cfg.ModelTemplate
+	tmplFile := cfg.HandlerTemplate
 
 	var bytes []byte
 	var err error
@@ -108,7 +92,7 @@ func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
 	}
 	tmplContent := string(bytes)
 
-	tmpl, err := template.New("model").Parse(tmplContent)
+	tmpl, err := template.New("handler").Parse(tmplContent)
 	if err != nil {
 		return err
 	}
@@ -128,4 +112,15 @@ func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
 	}(file)
 
 	return tmpl.Execute(file, data)
+}
+
+func parseAction(entity string, raw []string) []Action {
+	var actions []Action
+	for _, item := range raw {
+		actions = append(actions, Action{
+			Name:   gon.Capitalize(item),
+			Entity: entity,
+		})
+	}
+	return actions
 }

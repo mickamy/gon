@@ -12,10 +12,9 @@ import (
 
 //go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
 type {{.EntityName}} interface {
-	List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.EntityName}}, error)
+	Create(ctx context.Context, m *model.{{.EntityName}}) error
 	Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error)
 	Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error)
-	Create(ctx context.Context, m *model.{{.EntityName}}) error
 	Update(ctx context.Context, m *model.{{.EntityName}}) error
 	Delete(ctx context.Context, id string) error
 	WithTx(tx *database.DB) {{.EntityName}}
@@ -29,10 +28,8 @@ func New{{.EntityName}}(db *database.DB) {{.EntityName}} {
     return &{{.LowerEntityName}}{db: db}
 }
 
-func (repo *{{.LowerEntityName}}) List(ctx context.Context, scopes ...func(*gorm.DB) *gorm.DB) ([]model.{{.EntityName}}, error) {
-    var ms []model.{{.EntityName}}
-    err := repo.db.WithContext(ctx).Scopes(scopes...).Find(&ms).Error
-    return ms, err
+func (repo *{{.LowerEntityName}}) Create(ctx context.Context, m *model.{{.EntityName}}) error {
+    return repo.db.WithContext(ctx).Create(&m).Error
 }
 
 func (repo *{{.LowerEntityName}}) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error) {
@@ -50,10 +47,6 @@ func (repo *{{.LowerEntityName}}) Find(ctx context.Context, id string, scopes ..
         return nil, err
     }
     return &m, nil
-}
-
-func (repo *{{.LowerEntityName}}) Create(ctx context.Context, m *model.{{.EntityName}}) error {
-    return repo.db.WithContext(ctx).Create(&m).Error
 }
 
 func (repo *{{.LowerEntityName}}) Update(ctx context.Context, m *model.{{.EntityName}}) error {

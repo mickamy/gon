@@ -96,6 +96,14 @@ func writeTemplateFiles(cfg *config.Config) error {
 		cfg.UsecaseTemplate: func() string {
 			return "defaults/usecase.tmpl"
 		},
+		cfg.HandlerTemplate: func() string {
+			switch cfg.WebFramework {
+			case config.WebFrameworkEcho:
+				return "defaults/handler_echo.tmpl"
+			default:
+				return "defaults/handler_echo.tmpl"
+			}
+		},
 	}
 
 	for destPath, embedPathFn := range templateFiles {

@@ -2,10 +2,10 @@ package repository
 
 import (
 	"fmt"
-	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/spf13/cobra"
 
@@ -22,7 +22,7 @@ type TemplateData struct {
 }
 
 var Cmd = &cobra.Command{
-	Use:   "repository [name] [fields]",
+	Use:   "repository [model] [fields]",
 	Short: "Generate a repository to retrieve domain model",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

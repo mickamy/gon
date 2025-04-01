@@ -20,6 +20,8 @@ webFramework: {{.WebFramework}}
 databasePackage: {{.DatabasePackage}}
 modelTemplate: ./templates/model.tmpl
 repositoryTemplate: ./templates/repository.tmpl
+usecaseTemplate: ./templates/usecase.tmpl
+handlerTemplate: ./templates/handler.tmpl
 `
 
 type configInput struct {

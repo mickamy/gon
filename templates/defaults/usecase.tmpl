@@ -1,0 +1,29 @@
+package usecase
+
+import (
+	"context"
+)
+
+type {{.Name}}Input struct {
+}
+
+type {{.Name}}Output struct {
+}
+
+//go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
+type {{.Name}} interface {
+	Do(ctx context.Context, input {{.Name}}Input) ({{.Name}}Output, error)
+}
+
+type {{.UncapitalizedName}} struct {
+}
+
+func New{{.Name}}(
+) {{.Name}} {
+	return &{{.UncapitalizedName}}{
+	}
+}
+
+func (uc {{.UncapitalizedName}}) Do(ctx context.Context, input {{.Name}}Input) ({{.Name}}Output, error) {
+	return {{.Name}}Output{}, nil
+}

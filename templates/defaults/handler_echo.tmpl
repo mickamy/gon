@@ -1,0 +1,26 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/labstack/echo/v4"
+
+	"{{.UsecasePackage}}"
+)
+
+
+{{- range .Actions}}
+type {{.Name}}{{.Entity}}Handler echo.HandlerFunc
+
+func {{.Name}}{{.Entity}}(uc usecase.{{.Name}}{{.Entity}}) {{.Name}}{{.Entity}}Handler {
+    return func(c echo.Context) error {
+        ctx := c.Request().Context()
+        output, err := uc.Do(ctx, usecase.{{.Name}}{{.Entity}}Input{
+        })
+        if err != nil {
+            return c.JSON(http.StatusInternalServerError, err)
+        }
+        return c.JSON(http.StatusOK, output)
+    }
+}
+{{- end}}

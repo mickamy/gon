@@ -1,0 +1,62 @@
+package repository
+
+import (
+    "context"
+    "errors"
+
+	"gorm.io/gorm"
+
+    "{{.BasePackage}}/internal/domain/{{.DomainName}}/model"
+	"{{.DatabasePackage}}"
+)
+
+//go:generate mockgen -source=$GOFILE -destination=./mock_$GOPACKAGE/mock_$GOFILE -package=mock_$GOPACKAGE
+type {{.EntityName}} interface {
+	Create(ctx context.Context, m *model.{{.EntityName}}) error
+	Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error)
+	Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error)
+	Update(ctx context.Context, m *model.{{.EntityName}}) error
+	Delete(ctx context.Context, id string) error
+	WithTx(tx *database.DB) {{.EntityName}}
+}
+
+type {{.LowerEntityName}} struct {
+    db *database.DB
+}
+
+func New{{.EntityName}}(db *database.DB) {{.EntityName}} {
+    return &{{.LowerEntityName}}{db: db}
+}
+
+func (repo *{{.LowerEntityName}}) Create(ctx context.Context, m *model.{{.EntityName}}) error {
+    return repo.db.WithContext(ctx).Create(&m).Error
+}
+
+func (repo *{{.LowerEntityName}}) Get(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (model.{{.EntityName}}, error) {
+    var m model.{{.EntityName}}
+    err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error
+    return m, err
+}
+
+func (repo *{{.LowerEntityName}}) Find(ctx context.Context, id string, scopes ...func(*gorm.DB) *gorm.DB) (*model.{{.EntityName}}, error) {
+    var m model.{{.EntityName}}
+    if err := repo.db.WithContext(ctx).Scopes(scopes...).First(&m, id).Error; err != nil {
+        if errors.Is(err, gorm.ErrRecordNotFound) {
+            return nil, nil
+        }
+        return nil, err
+    }
+    return &m, nil
+}
+
+func (repo *{{.LowerEntityName}}) Update(ctx context.Context, m *model.{{.EntityName}}) error {
+    return repo.db.WithContext(ctx).Save(m).Error
+}
+
+func (repo *{{.LowerEntityName}}) Delete(ctx context.Context, id string) error {
+    return repo.db.WithContext(ctx).Delete(&model.{{.EntityName}}{}, id).Error
+}
+
+func (repo *{{.LowerEntityName}}) WithTx(tx *database.DB) {{.EntityName}} {
+    return &{{.LowerEntityName}}{db: tx}
+}

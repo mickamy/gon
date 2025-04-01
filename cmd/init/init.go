@@ -15,7 +15,7 @@ import (
 
 const defaultConfigTemplate = `basePackage: {{.BasePackage}}
 outputDir: {{.OutputDir}}
-testUtilDir: ./test
+testUtilDir: {{.TestUtilDir}}
 dbDriver: {{.DBDriver}}
 webFramework: {{.WebFramework}}
 databasePackage: {{.DatabasePackage}}
@@ -33,6 +33,7 @@ handlerTestTemplate: ./templates/handler_test.tmpl
 type configInput struct {
 	BasePackage     string
 	OutputDir       string
+	TestUtilDir     string
 	DBDriver        string
 	WebFramework    string
 	DatabasePackage string
@@ -74,7 +75,14 @@ func promptAndWriteConfigFile() error {
 		outDir = "internal/domain"
 	}
 
-	fmt.Print("🛢️  Default database driver (gorm): ")
+	fmt.Println("📂 Test util directory (default: ./test): ")
+	testUtilDir, _ := reader.ReadString('\n')
+	testUtilDir = strings.TrimSpace(testUtilDir)
+	if testUtilDir == "" {
+		testUtilDir = "./test"
+	}
+
+	fmt.Print("🛢️ Database driver (default: gorm): ")
 	driver, _ := reader.ReadString('\n')
 	driver = strings.TrimSpace(driver)
 	if driver == "" {
@@ -84,7 +92,7 @@ func promptAndWriteConfigFile() error {
 		return fmt.Errorf("❌ Invalid DB driver specified: %s", driver)
 	}
 
-	fmt.Print("🌐 Default web framework (echo): ")
+	fmt.Print("🌐 WEB framework (default: echo): ")
 	web, _ := reader.ReadString('\n')
 	web = strings.TrimSpace(web)
 	if web == "" {

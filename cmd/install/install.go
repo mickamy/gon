@@ -31,7 +31,7 @@ func RunInstall(cfg *config.Config) error {
 		return err
 	}
 
-	fmt.Println("📁 Creating driver-specific templates...")
+	fmt.Println("📁 Creating templates...")
 	if err := writeTemplateFiles(cfg); err != nil {
 		fmt.Printf("⚠️ Failed to create templates: %v\n", err)
 	}
@@ -127,7 +127,7 @@ func writeTemplateFiles(cfg *config.Config) error {
 			return err
 		}
 
-		fmt.Printf("✅ Created driver-specific template: %s\n", destPath)
+		fmt.Printf("✅ Created template: %s\n", destPath)
 	}
 
 	return nil

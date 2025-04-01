@@ -47,7 +47,7 @@ func RunInstall(cfg *config.Config) error {
 }
 
 func writeDatabaseFile(cfg *config.Config) error {
-	driver := cfg.DefaultDriver
+	driver := cfg.DBDriver
 	path := filepath.Join(cfg.DatabasePackagePath(), driver.String()+".go")
 	fmt.Printf("🧱 Generating database file: %s...\n", path)
 
@@ -62,7 +62,7 @@ func writeDatabaseFile(cfg *config.Config) error {
 
 	var content string
 	switch driver {
-	case config.DriverGorm:
+	case config.DBDriverGorm:
 		content = gormFileContent
 	default:
 		return fmt.Errorf("❌ Failed to generate database file: unsupported driver %q", driver)
@@ -78,16 +78,16 @@ func writeDatabaseFile(cfg *config.Config) error {
 func writeTemplateFiles(cfg *config.Config) error {
 	templateFiles := map[string]func() string{
 		cfg.ModelTemplate: func() string {
-			switch cfg.DefaultDriver {
-			case config.DriverGorm:
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
 				return "defaults/model.tmpl"
 			default:
 				return "defaults/model.tmpl"
 			}
 		},
 		cfg.RepositoryTemplate: func() string {
-			switch cfg.DefaultDriver {
-			case config.DriverGorm:
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
 				return "defaults/repository_gorm.tmpl"
 			default:
 				return "defaults/repository_gorm.tmpl"

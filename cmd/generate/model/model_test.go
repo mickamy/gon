@@ -17,8 +17,8 @@ func TestGenerateModel(t *testing.T) {
 	cfg := config.New(config.Config{
 		BasePackage:        "example.com/test/project",
 		OutputDir:          "internal/domain",
-		DefaultDriver:      config.DriverGorm,
-		DefaultWeb:         config.WebEcho,
+		DBDriver:           config.DBDriverGorm,
+		WebFramework:       config.WebFrameworkEcho,
 		DatabasePackage:    "example.com/test/project/internal/infra/storage/database",
 		ModelTemplate:      "defaults/model.tmpl",
 		RepositoryTemplate: "defaults/repository_gorm.tmpl",

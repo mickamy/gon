@@ -9,34 +9,54 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Driver string
+type DBDriver string
 
-func (d Driver) String() string {
+func (d DBDriver) String() string {
 	return string(d)
 }
 
+func IsValidDBDriver(driver string) bool {
+	drivers := []DBDriver{DBDriverGorm}
+	for _, d := range drivers {
+		if driver == d.String() {
+			return true
+		}
+	}
+	return false
+}
+
 const (
-	DriverGorm Driver = "gorm"
+	DBDriverGorm DBDriver = "gorm"
 )
 
-type Web string
+type WebFramework string
 
-func (w Web) String() string {
+func IsValidWebFramework(web string) bool {
+	fs := []WebFramework{WebFrameworkEcho}
+	for _, w := range fs {
+		if web == w.String() {
+			return true
+		}
+	}
+	return false
+}
+
+func (w WebFramework) String() string {
 	return string(w)
 }
 
 const (
-	WebEcho Web = "echo"
+	WebFrameworkEcho WebFramework = "echo"
 )
 
 type Config struct {
-	BasePackage        string `mapstructure:"basePackage"`
-	OutputDir          string `mapstructure:"outputDir"`
-	DefaultDriver      Driver `mapstructure:"defaultDriver"`
-	DefaultWeb         Web    `mapstructure:"defaultWeb"`
-	DatabasePackage    string `mapstructure:"databasePackage"`
-	ModelTemplate      string `mapstructure:"modelTemplate"`
-	RepositoryTemplate string `mapstructure:"repositoryTemplate"`
+	BasePackage        string       `mapstructure:"basePackage"`
+	OutputDir          string       `mapstructure:"outputDir"`
+	DBDriver           DBDriver     `mapstructure:"dbDriver"`
+	WebFramework       WebFramework `mapstructure:"webFramework"`
+	DatabasePackage    string       `mapstructure:"databasePackage"`
+	ModelTemplate      string       `mapstructure:"modelTemplate"`
+	RepositoryTemplate string       `mapstructure:"repositoryTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {
@@ -59,8 +79,8 @@ func Load() (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	fmt.Printf("Driver: %s\n", cfg.DefaultDriver.String())
-	fmt.Printf("Web framework: %s\n", cfg.DefaultWeb.String())
+	fmt.Printf("DBDriver: %s\n", cfg.DBDriver.String())
+	fmt.Printf("Web framework: %s\n", cfg.WebFramework.String())
 
 	return &cfg, nil
 }

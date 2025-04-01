@@ -1,0 +1,25 @@
+package usecase_test
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"{{.DomainPackage}}/usecase"
+)
+
+func Test{{.Name}}_Do(t *testing.T) {
+	t.Parallel()
+
+	// arrange
+	ctx := t.Context()
+
+	// act
+	sut := usecase.New{{.Name}}()
+	got, err := sut.Do(ctx, usecase.{{.Name}}Input{})
+
+	// assert
+	require.NoError(t, err)
+	assert.Equal(t, usecase.{{.Name}}Output{}, got)
+}

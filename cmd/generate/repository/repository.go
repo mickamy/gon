@@ -18,6 +18,7 @@ type TemplateData struct {
 	LowerEntityName string
 	BasePackage     string
 	DatabasePackage string
+	DomainName      string
 }
 
 var Cmd = &cobra.Command{
@@ -26,18 +27,19 @@ var Cmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := gon.Capitalize(args[0])
+		if domain == "" {
+			fmt.Println("Domain is not specified. Using the entity name as the domain.")
+			domain = name
+		}
 		data := TemplateData{
 			EntityName:      name,
 			LowerEntityName: gon.Uncapitalize(name),
 			BasePackage:     gon.Config.BasePackage,
 			DatabasePackage: gon.Config.DatabasePackage,
+			DomainName:      gon.Uncapitalize(domain),
 		}
 
 		fmt.Println("Generating repository...")
-		if domain == "" {
-			fmt.Println("Domain is not specified. Using the entity name as the domain.")
-			domain = name
-		}
 		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))); err != nil {
 			return err
 		}

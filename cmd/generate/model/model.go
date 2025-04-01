@@ -29,7 +29,7 @@ var Cmd = &cobra.Command{
 	Short: "Generate a domain model",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		name := gon.Uncapitalize(args[0])
+		name := gon.Capitalize(args[0])
 		fields := parseFields(args[1:])
 
 		data := TemplateData{

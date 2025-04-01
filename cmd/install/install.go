@@ -37,7 +37,7 @@ func RunInstall(cfg *config.Config) error {
 	}
 
 	fmt.Println("📦 Installing gomock...")
-	if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
+	if err := exec.Command("go", "get", "-tool", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
 		fmt.Println("⚠️ Failed to install gomock:", err)
 	} else {
 		fmt.Println("✅ gomock installed successfully.")

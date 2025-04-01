@@ -33,7 +33,7 @@ func writerConfigFile() error {
 	path := filepath.Join(".", "gon.yaml")
 
 	if _, err := os.Stat(path); err == nil {
-		fmt.Println("gon.yaml already exists. Skipping.")
+		fmt.Println("📄 gon.yaml already exists. Skipping generation.")
 		return nil
 	}
 
@@ -55,7 +55,7 @@ func writerConfigFile() error {
 		return err
 	}
 
-	fmt.Println("✅ gon.yaml created.")
+	fmt.Println("✅ Config file gon.yaml created successfully.")
 
 	return nil
 }

@@ -37,16 +37,16 @@ var Cmd = &cobra.Command{
 			Fields:     fields,
 		}
 
-		fmt.Println("Generating model...")
+		fmt.Println("📄 Generating model file...")
 		if domain == "" {
-			fmt.Println("Domain not specified. Using the entity name as the domain.")
+			fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 			domain = name
 		}
 		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))); err != nil {
 			return err
 		}
 
-		fmt.Println("Model generated successfully.")
+		fmt.Println("✅ Model file generated successfully.")
 		return nil
 	},
 }
@@ -96,7 +96,7 @@ func renderToFile(data TemplateData, outPath string) error {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			fmt.Printf("failed to close file: %v\n", err)
+			fmt.Printf("⚠️ Failed to close file: %v\n", err)
 		}
 	}(file)
 

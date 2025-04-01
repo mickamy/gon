@@ -28,9 +28,9 @@ var Cmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		name := gon.Capitalize(args[0])
 		if domain == "" {
-			fmt.Println("Domain is not specified. Using the entity name as the domain.")
-			domain = name
+			fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		}
+
 		data := TemplateData{
 			EntityName:      name,
 			LowerEntityName: gon.Uncapitalize(name),
@@ -39,12 +39,12 @@ var Cmd = &cobra.Command{
 			DomainName:      gon.Uncapitalize(domain),
 		}
 
-		fmt.Println("Generating repository...")
+		fmt.Println("📄 Generating repository file...")
 		if err := renderToFile(data, filepath.Join("internal", "domain", domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))); err != nil {
 			return err
 		}
 
-		fmt.Println("Repository generated successfully.")
+		fmt.Println("✅ Repository file generated successfully.")
 		return nil
 	},
 }
@@ -78,7 +78,7 @@ func renderToFile(data TemplateData, outPath string) error {
 	defer func(file *os.File) {
 		err := file.Close()
 		if err != nil {
-			fmt.Printf("failed to close file: %v\n", err)
+			fmt.Printf("⚠️ Failed to close file: %v\n", err)
 		}
 	}(file)
 

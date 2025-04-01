@@ -25,7 +25,7 @@ var Cmd = &cobra.Command{
 		if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
 			fmt.Println("⚠️ Failed to install gomock:", err)
 		} else {
-			fmt.Println("✅ gomock installed.")
+			fmt.Println("✅ gomock installed successfully.")
 		}
 
 		return nil
@@ -35,10 +35,10 @@ var Cmd = &cobra.Command{
 func writeDatabaseFile() error {
 	driver := gon.Config.DefaultDriver
 	path := filepath.Join(gon.Config.DatabasePackagePath(), driver.String()+".go")
-	fmt.Printf("🧱 Generating %s...\n", path)
+	fmt.Printf("🧱 Generating database file: %s...\n", path)
 
 	if _, err := os.Stat(path); err == nil {
-		fmt.Printf("%s already exists. Skipping.", path)
+		fmt.Printf("📄 %s already exists. Skipping generation.\n", path)
 		return nil
 	}
 

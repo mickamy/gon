@@ -3,7 +3,7 @@ VERSION ?= dev
 BUILD_DIR = bin
 GORELEASER ?= go tool goreleaser
 
-.PHONY: all build install clean version test
+.PHONY: all build install uninstall clean version test
 
 all: build
 
@@ -14,6 +14,15 @@ build:
 install:
 	@echo "📦 Installing $(APP_NAME)..."
 	go install -ldflags "-X github.com/mickamy/gon/cmd/version.Version=$(VERSION)"
+
+uninstall:
+	@echo "🗑️  Uninstalling $(APP_NAME)..."
+	@bin_dir=$$(go env GOBIN); \
+	if [ -z "$$bin_dir" ]; then \
+		bin_dir=$$(go env GOPATH)/bin; \
+	fi; \
+	echo "Removing $$bin_dir/$(APP_NAME)"; \
+	rm -f $$bin_dir/$(APP_NAME)
 
 clean:
 	@echo "🧹 Cleaning up..."

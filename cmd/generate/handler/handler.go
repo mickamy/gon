@@ -15,11 +15,14 @@ import (
 type Action struct {
 	Name   string
 	Entity string
+	Method string
+	Path   string
 }
 
 type TemplateData struct {
-	Actions        []Action
-	UsecasePackage string
+	Actions         []Action
+	DomainPackage   string
+	TestUtilPackage string
 }
 
 var Cmd = &cobra.Command{
@@ -49,8 +52,9 @@ func Generate(cfg *config.Config, args []string, domain string) error {
 	}
 
 	data := TemplateData{
-		Actions:        parseAction(entity, actions),
-		UsecasePackage: cfg.DomainPackage(domain) + "/usecase",
+		Actions:         parseAction(entity, actions),
+		DomainPackage:   cfg.DomainPackage(domain),
+		TestUtilPackage: filepath.Join(cfg.BasePackage, cfg.TestUtilDir),
 	}
 
 	outPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(entity)))
@@ -82,6 +86,8 @@ func parseAction(entity string, raw []string) []Action {
 		actions = append(actions, Action{
 			Name:   caseconv.Capitalize(item),
 			Entity: entity,
+			Method: "Get",
+			Path:   caseconv.SnakeCase(entity),
 		})
 	}
 	return actions

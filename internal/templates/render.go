@@ -17,9 +17,9 @@ func Render(tmplFile string, data any, out string) error {
 			return fmt.Errorf("⚠️ Failed to read local template %q: %w", tmplFile, err)
 		}
 	} else {
-		bytes, err = DefaultFS.ReadFile(tmplFile)
+		bytes, err = FS.ReadFile(tmplFile)
 		if err != nil {
-			bytes, err = DefaultFS.ReadFile(tmplFile)
+			bytes, err = FS.ReadFile(tmplFile)
 			if err != nil {
 				return fmt.Errorf(
 					"⚠️ Failed to read embedded template %q: %w\n💡 You might need to run `gon install` to generate default templates.",

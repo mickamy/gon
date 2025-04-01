@@ -38,7 +38,8 @@ func RunInstall(cfg *config.Config) error {
 
 	fmt.Println("📁 Creating templates...")
 	if err := copyTemplateFiles(cfg); err != nil {
-		fmt.Printf("⚠️ Failed to create templates: %v\n", err)
+		fmt.Printf("💥 Failed to create templates: %v\n", err)
+		return err
 	}
 
 	fmt.Println("📦 Installing gomock...")
@@ -61,7 +62,7 @@ func copyDatabaseFile(cfg *config.Config) error {
 		return nil
 	}
 
-	if err := templates.Copy("database/"+driver.String()+".go.tmpl", path); err != nil {
+	if err := templates.Copy("defaults/database/"+driver.String()+".go.tmpl", path); err != nil {
 		return err
 	}
 
@@ -97,39 +98,19 @@ func copyTestUtilFiles(cfg *config.Config) error {
 func copyTemplateFiles(cfg *config.Config) error {
 	templateFiles := map[string]func() string{
 		cfg.ModelTemplate: func() string {
-			switch cfg.DBDriver {
-			case config.DBDriverGorm:
-				return "defaults/model.tmpl"
-			default:
-				return "defaults/model.tmpl"
-			}
+			return "defaults/model.tmpl"
 		},
 		cfg.ModelTestTemplate: func() string {
-			switch cfg.DBDriver {
-			case config.DBDriverGorm:
-				return "defaults/model_test.tmpl"
-			default:
-				return "defaults/model_test.tmpl"
-			}
+			return "defaults/model_test.tmpl"
 		},
 		cfg.FixtureTemplate: func() string {
 			return "defaults/fixture.tmpl"
 		},
 		cfg.RepositoryTemplate: func() string {
-			switch cfg.DBDriver {
-			case config.DBDriverGorm:
-				return "defaults/repository_gorm.tmpl"
-			default:
-				return "defaults/repository_gorm.tmpl"
-			}
+			return "defaults/repository_" + cfg.DBDriver.String() + ".tmpl"
 		},
 		cfg.RepositoryTestTemplate: func() string {
-			switch cfg.DBDriver {
-			case config.DBDriverGorm:
-				return "defaults/repository_test_gorm.tmpl"
-			default:
-				return "defaults/repository_test_gorm.tmpl"
-			}
+			return "defaults/repository_test_" + cfg.DBDriver.String() + ".tmpl"
 		},
 		cfg.UsecaseTemplate: func() string {
 			return "defaults/usecase.tmpl"
@@ -138,20 +119,10 @@ func copyTemplateFiles(cfg *config.Config) error {
 			return "defaults/usecase_test.tmpl"
 		},
 		cfg.HandlerTemplate: func() string {
-			switch cfg.WebFramework {
-			case config.WebFrameworkEcho:
-				return "defaults/handler_echo.tmpl"
-			default:
-				return "defaults/handler_echo.tmpl"
-			}
+			return "defaults/handler_" + cfg.WebFramework.String() + ".tmpl"
 		},
 		cfg.HandlerTestTemplate: func() string {
-			switch cfg.WebFramework {
-			case config.WebFrameworkEcho:
-				return "defaults/handler_test_echo.tmpl"
-			default:
-				return "defaults/handler_test_echo.tmpl"
-			}
+			return "defaults/handler_test_" + cfg.WebFramework.String() + ".tmpl"
 		},
 	}
 

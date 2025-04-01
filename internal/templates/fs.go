@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed defaults/**/*
-var DefaultFS embed.FS
+//go:embed defaults/**/* defaults/*
+var FS embed.FS

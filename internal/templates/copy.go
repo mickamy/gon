@@ -9,7 +9,7 @@ import (
 )
 
 func Copy(src string, dest string) error {
-	f, err := DefaultFS.Open(src)
+	f, err := FS.Open(src)
 	if err != nil {
 		return fmt.Errorf("failed to open embedded file %q: %w", src, err)
 	}

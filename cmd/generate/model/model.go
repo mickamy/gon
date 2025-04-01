@@ -13,9 +13,8 @@ import (
 )
 
 type Field struct {
-	Name     string
-	Type     string
-	JSONName string
+	Name string
+	Type string
 }
 
 type TemplateData struct {
@@ -84,9 +83,8 @@ func parseFields(raw []string) []Field {
 			continue
 		}
 		fields = append(fields, Field{
-			Name:     caseconv.Capitalize(parts[0]),
-			Type:     parts[1],
-			JSONName: parts[0],
+			Name: caseconv.Capitalize(parts[0]),
+			Type: parts[1],
 		})
 	}
 	return fields

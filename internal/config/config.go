@@ -57,6 +57,7 @@ type Config struct {
 	DatabasePackage        string       `mapstructure:"databasePackage"`
 	ModelTemplate          string       `mapstructure:"modelTemplate"`
 	ModelTestTemplate      string       `mapstructure:"modelTestTemplate"`
+	FixtureTemplate        string       `mapstructure:"fixtureTemplate"`
 	RepositoryTemplate     string       `mapstructure:"repositoryTemplate"`
 	RepositoryTestTemplate string       `mapstructure:"repositoryTestTemplate"`
 	UsecaseTemplate        string       `mapstructure:"usecaseTemplate"`

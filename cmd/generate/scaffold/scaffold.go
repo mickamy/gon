@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/generate/fixture"
 	"github.com/mickamy/gon/cmd/generate/handler"
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
@@ -42,6 +43,12 @@ var Cmd = &cobra.Command{
 			return fmt.Errorf("model generation failed: %w", err)
 		}
 		fmt.Printf("✅ model:      %s\n", filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name))))
+
+		// --- Fixture ---
+		if err := fixture.Generate(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("fixture generation failed: %w", err)
+		}
+		fmt.Printf("✅ fixture:    %s\n", filepath.Join(cfg.OutputDir, domain, "fixture", fmt.Sprintf("%s_fixture.go", strings.ToLower(name))))
 
 		// --- Repository ---
 		if err := repository.Generate(cfg, []string{name}, domain); err != nil {

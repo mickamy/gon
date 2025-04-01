@@ -1,0 +1,17 @@
+package fixture
+
+import (
+	"{{.BasePackage}}/internal/domain/{{.DomainName}}/model"
+)
+
+func {{.Model}}(setter func(m *model.{{.Model}})) model.{{.Model}} {
+	m := model.{{.Model}}{
+		// TODO: Set sample values for each field
+	}
+
+	if setter != nil {
+		setter(&m)
+	}
+
+	return m
+}

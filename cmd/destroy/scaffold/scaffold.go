@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/destroy/fixture"
 	"github.com/mickamy/gon/cmd/destroy/handler"
 	"github.com/mickamy/gon/cmd/destroy/model"
 	"github.com/mickamy/gon/cmd/destroy/repository"
@@ -42,6 +43,13 @@ var Cmd = &cobra.Command{
 		}
 		modelPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
 		fmt.Printf("✅ model:      %s\n", modelPath)
+
+		// --- Fixture ---
+		if err := fixture.Destroy(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("fixture destroy failed: %w", err)
+		}
+		fixturePath := filepath.Join(cfg.OutputDir, domain, "fixture", fmt.Sprintf("%s_fixture.go", strings.ToLower(name)))
+		fmt.Printf("✅ fixture:    %s\n", fixturePath)
 
 		// --- Repository ---
 		if err := repository.Destroy(cfg, []string{name}, domain); err != nil {

@@ -3,6 +3,7 @@ package generate
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/generate/fixture"
 	"github.com/mickamy/gon/cmd/generate/handler"
 	"github.com/mickamy/gon/cmd/generate/model"
 	"github.com/mickamy/gon/cmd/generate/repository"
@@ -18,6 +19,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
+	Cmd.AddCommand(fixture.Cmd)
 	Cmd.AddCommand(handler.Cmd)
 	Cmd.AddCommand(repository.Cmd)
 	Cmd.AddCommand(model.Cmd)

@@ -34,6 +34,7 @@ var Cmd = &cobra.Command{
 			{model.Cmd, append([]string{name}, fields...)},
 			{repository.Cmd, []string{name}},
 			{usecase.Cmd, []string{"Get" + capitalizedName}},
+			{usecase.Cmd, []string{"List" + capitalizedName}},
 			{usecase.Cmd, []string{"Create" + capitalizedName}},
 			{usecase.Cmd, []string{"Update" + capitalizedName}},
 			{usecase.Cmd, []string{"Delete" + capitalizedName}},

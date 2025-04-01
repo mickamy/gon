@@ -1,10 +1,9 @@
-package repository
+package usecase
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -13,8 +12,8 @@ import (
 )
 
 var Cmd = &cobra.Command{
-	Use:   "repository",
-	Short: "Destroy a repository",
+	Use:   "usecase",
+	Short: "Destroy a usecase",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
@@ -28,17 +27,17 @@ var Cmd = &cobra.Command{
 func Destroy(cfg *config.Config, args []string) error {
 	name := gon.Capitalize(args[0])
 
-	fmt.Println("📄 Destroying repository file...")
+	fmt.Println("📄 Destroying usecase file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
-	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.ToSnakeCase(name)))
 	if err := os.Remove(outPath); err != nil {
-		return fmt.Errorf("⚠️ Failed to remove repository file %q: %w", outPath, err)
+		return fmt.Errorf("⚠️ Failed to remove usecase file %q: %w", outPath, err)
 	}
 
-	fmt.Println("✅ Repository file destroyed successfully.")
+	fmt.Println("✅ Usecase file destroyed successfully.")
 	return nil
 }
 

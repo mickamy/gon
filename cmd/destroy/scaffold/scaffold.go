@@ -5,8 +5,11 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/destroy/handler"
 	"github.com/mickamy/gon/cmd/destroy/model"
 	"github.com/mickamy/gon/cmd/destroy/repository"
+	"github.com/mickamy/gon/cmd/destroy/usecase"
+	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
@@ -23,12 +26,19 @@ var Cmd = &cobra.Command{
 			domain = name
 		}
 
+		capitalizedName := gon.Capitalize(name)
 		subcommands := []struct {
 			cmd  *cobra.Command
 			args []string
 		}{
 			{model.Cmd, []string{name}},
 			{repository.Cmd, []string{name}},
+			{usecase.Cmd, []string{"Get" + capitalizedName}},
+			{usecase.Cmd, []string{"List" + capitalizedName}},
+			{usecase.Cmd, []string{"Create" + capitalizedName}},
+			{usecase.Cmd, []string{"Update" + capitalizedName}},
+			{usecase.Cmd, []string{"Delete" + capitalizedName}},
+			{handler.Cmd, []string{name}},
 		}
 
 		for _, sub := range subcommands {

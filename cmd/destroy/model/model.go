@@ -14,7 +14,7 @@ import (
 
 var Cmd = &cobra.Command{
 	Use:   "model",
-	Short: "Destroy a domain model",
+	Short: "Destroy a model",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()

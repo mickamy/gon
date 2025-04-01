@@ -1,4 +1,4 @@
-package repository
+package handler
 
 import (
 	"fmt"
@@ -13,8 +13,8 @@ import (
 )
 
 var Cmd = &cobra.Command{
-	Use:   "repository",
-	Short: "Destroy a repository",
+	Use:   "handler",
+	Short: "Destroy a handler",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
@@ -28,17 +28,17 @@ var Cmd = &cobra.Command{
 func Destroy(cfg *config.Config, args []string) error {
 	name := gon.Capitalize(args[0])
 
-	fmt.Println("📄 Destroying repository file...")
+	fmt.Println("📄 Destroying handler file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
-	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
+	outPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(name)))
 	if err := os.Remove(outPath); err != nil {
-		return fmt.Errorf("⚠️ Failed to remove repository file %q: %w", outPath, err)
+		return fmt.Errorf("⚠️ Failed to remove handler file %q: %w", outPath, err)
 	}
 
-	fmt.Println("✅ Repository file destroyed successfully.")
+	fmt.Println("✅ Handler file destroyed successfully.")
 	return nil
 }
 

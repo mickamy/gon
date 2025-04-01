@@ -3,7 +3,7 @@ VERSION ?= dev
 BUILD_DIR = bin
 GORELEASER ?= go tool goreleaser
 
-.PHONY: all build install clean version
+.PHONY: all build install clean version test
 
 all: build
 
@@ -21,6 +21,10 @@ clean:
 
 version:
 	@echo "🔖 Version: $(VERSION)"
+
+test:
+	@echo "🧪 Running tests..."
+	go test ./...
 
 release:
 	@echo "🚀 Running release..."

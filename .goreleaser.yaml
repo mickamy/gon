@@ -1,3 +1,4 @@
+version: 2
 project_name: gon
 release:
   github:
@@ -16,7 +17,7 @@ builds:
     binary: gon
 
 archives:
-  - format: tar.gz
+  - formats: tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - LICENSE

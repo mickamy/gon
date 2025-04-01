@@ -22,7 +22,7 @@ type TemplateData struct {
 }
 
 var Cmd = &cobra.Command{
-	Use:   "repository [model] [fields]",
+	Use:   "repository [model]",
 	Short: "Generate a repository to retrieve domain model",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

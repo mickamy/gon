@@ -1,10 +1,9 @@
-package repository
+package usecase
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 
 	"github.com/spf13/cobra"
@@ -14,16 +13,13 @@ import (
 )
 
 type TemplateData struct {
-	EntityName      string
-	LowerEntityName string
-	BasePackage     string
-	DatabasePackage string
-	DomainName      string
+	Name              string
+	UncapitalizedName string
 }
 
 var Cmd = &cobra.Command{
-	Use:   "repository [model] [fields]",
-	Short: "Generate a repository to retrieve domain model",
+	Use:   "usecase [name]",
+	Short: "Generate a usecase to execute business logic",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		cfg, err := config.Load()
@@ -44,35 +40,32 @@ func Generate(cfg *config.Config, args []string) error {
 	name := gon.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
-		domain = name
+		domain = gon.ToSnakeCase(name)
 	}
 
 	data := TemplateData{
-		EntityName:      name,
-		LowerEntityName: gon.Uncapitalize(name),
-		BasePackage:     cfg.BasePackage,
-		DatabasePackage: cfg.DatabasePackage,
-		DomainName:      gon.Uncapitalize(domain),
+		Name:              name,
+		UncapitalizedName: gon.Uncapitalize(name),
 	}
 
-	fmt.Println("📄 Generating repository file...")
-	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
+	fmt.Println("📄 Generating usecase file...")
+	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", gon.ToSnakeCase(name)))
 	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}
 
-	fmt.Println("✅ Repository file generated successfully.")
+	fmt.Println("✅ Usecase file generated successfully.")
 	return nil
 }
 
 func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
-	b, err := os.ReadFile(cfg.RepositoryTemplate)
+	b, err := os.ReadFile(cfg.UsecaseTemplate)
 	if err != nil {
 		return err
 	}
 	tmplContent := string(b)
 
-	tmpl, err := template.New("repository").Parse(tmplContent)
+	tmpl, err := template.New("usecase").Parse(tmplContent)
 	if err != nil {
 		return err
 	}

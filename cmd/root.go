@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/destroy"
 	"github.com/mickamy/gon/cmd/generate"
 	initCmd "github.com/mickamy/gon/cmd/init"
 	"github.com/mickamy/gon/cmd/install"
@@ -27,6 +28,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
+	Cmd.AddCommand(destroy.Cmd)
 	Cmd.AddCommand(generate.Cmd)
 	Cmd.AddCommand(initCmd.Cmd)
 	Cmd.AddCommand(install.Cmd)

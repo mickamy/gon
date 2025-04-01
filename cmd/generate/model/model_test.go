@@ -16,9 +16,10 @@ func TestGenerateModel(t *testing.T) {
 
 	cfg := config.New(config.Config{
 		BasePackage:        "example.com/test/project",
+		InternalPackage:    "example.com/test/project/internal",
 		OutputDir:          "internal/domain",
-		DefaultDriver:      config.DriverGorm,
-		DefaultWeb:         config.WebEcho,
+		DBDriver:           config.DBDriverGorm,
+		WebFramework:       config.WebFrameworkEcho,
 		DatabasePackage:    "example.com/test/project/internal/infra/storage/database",
 		ModelTemplate:      "defaults/model.tmpl",
 		RepositoryTemplate: "defaults/repository_gorm.tmpl",
@@ -33,7 +34,7 @@ func TestGenerateModel(t *testing.T) {
 	}()
 	_ = os.Chdir(tmp)
 
-	err := model.GenerateModel(cfg, args)
+	err := model.Generate(cfg, args)
 	if err != nil {
 		t.Fatalf("command failed: %v", err)
 	}

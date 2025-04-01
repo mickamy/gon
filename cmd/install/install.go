@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/internal/config"
-	"github.com/mickamy/gon/templates"
+	"github.com/mickamy/gon/internal/templates"
 )
 
 var Cmd = &cobra.Command{
@@ -31,13 +31,13 @@ func RunInstall(cfg *config.Config) error {
 		return err
 	}
 
-	fmt.Println("📁 Creating driver-specific templates...")
+	fmt.Println("📁 Creating templates...")
 	if err := writeTemplateFiles(cfg); err != nil {
 		fmt.Printf("⚠️ Failed to create templates: %v\n", err)
 	}
 
 	fmt.Println("📦 Installing gomock...")
-	if err := exec.Command("go", "install", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
+	if err := exec.Command("go", "get", "-tool", "github.com/golang/mock/mockgen@latest").Run(); err != nil {
 		fmt.Println("⚠️ Failed to install gomock:", err)
 	} else {
 		fmt.Println("✅ gomock installed successfully.")
@@ -47,7 +47,7 @@ func RunInstall(cfg *config.Config) error {
 }
 
 func writeDatabaseFile(cfg *config.Config) error {
-	driver := cfg.DefaultDriver
+	driver := cfg.DBDriver
 	path := filepath.Join(cfg.DatabasePackagePath(), driver.String()+".go")
 	fmt.Printf("🧱 Generating database file: %s...\n", path)
 
@@ -62,7 +62,7 @@ func writeDatabaseFile(cfg *config.Config) error {
 
 	var content string
 	switch driver {
-	case config.DriverGorm:
+	case config.DBDriverGorm:
 		content = gormFileContent
 	default:
 		return fmt.Errorf("❌ Failed to generate database file: unsupported driver %q", driver)
@@ -78,19 +78,30 @@ func writeDatabaseFile(cfg *config.Config) error {
 func writeTemplateFiles(cfg *config.Config) error {
 	templateFiles := map[string]func() string{
 		cfg.ModelTemplate: func() string {
-			switch cfg.DefaultDriver {
-			case config.DriverGorm:
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
 				return "defaults/model.tmpl"
 			default:
 				return "defaults/model.tmpl"
 			}
 		},
 		cfg.RepositoryTemplate: func() string {
-			switch cfg.DefaultDriver {
-			case config.DriverGorm:
+			switch cfg.DBDriver {
+			case config.DBDriverGorm:
 				return "defaults/repository_gorm.tmpl"
 			default:
 				return "defaults/repository_gorm.tmpl"
+			}
+		},
+		cfg.UsecaseTemplate: func() string {
+			return "defaults/usecase.tmpl"
+		},
+		cfg.HandlerTemplate: func() string {
+			switch cfg.WebFramework {
+			case config.WebFrameworkEcho:
+				return "defaults/handler_echo.tmpl"
+			default:
+				return "defaults/handler_echo.tmpl"
 			}
 		},
 	}
@@ -116,7 +127,7 @@ func writeTemplateFiles(cfg *config.Config) error {
 			return err
 		}
 
-		fmt.Printf("✅ Created driver-specific template: %s\n", destPath)
+		fmt.Printf("✅ Created template: %s\n", destPath)
 	}
 
 	return nil

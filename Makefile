@@ -3,7 +3,7 @@ VERSION ?= dev
 BUILD_DIR = bin
 GORELEASER ?= go tool goreleaser
 
-.PHONY: all build install uninstall clean version test
+.PHONY: all build install uninstall clean version test fmt
 
 all: build
 
@@ -34,6 +34,10 @@ version:
 test:
 	@echo "🧪 Running tests..."
 	go test ./...
+
+fmt:
+	@echo "📝 Formatting code..."
+	gofmt -w -l .
 
 release:
 	@echo "🚀 Running release..."

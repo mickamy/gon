@@ -21,24 +21,26 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Destroy(cfg, args)
+		if err := Destroy(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed to destroy repository: %w", err)
+		}
+		fmt.Printf("✅ Repository %s destroyed successfully.\n", args[0])
+		return nil
 	},
 }
 
-func Destroy(cfg *config.Config, args []string) error {
+func Destroy(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 
-	fmt.Println("📄 Destroying repository file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
 	if err := os.Remove(outPath); err != nil {
-		return fmt.Errorf("⚠️ Failed to remove repository file %q: %w", outPath, err)
+		return err
 	}
 
-	fmt.Println("✅ Repository file destroyed successfully.")
 	return nil
 }
 

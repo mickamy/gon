@@ -13,7 +13,7 @@ import (
 )
 
 var Cmd = &cobra.Command{
-	Use:   "model",
+	Use:   "model [name]",
 	Short: "Destroy a model",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -21,24 +21,26 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Destroy(cfg, args)
+		if err := Destroy(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed to destroy model: %w", err)
+		}
+		fmt.Printf("✅ Model %s destroyed successfully.\n", args[0])
+		return nil
 	},
 }
 
-func Destroy(cfg *config.Config, args []string) error {
+func Destroy(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 
-	fmt.Println("📄 Destroying model file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
 	}
 	outPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
 	if err := os.Remove(outPath); err != nil {
-		return fmt.Errorf("⚠️ Failed to remove model file %q: %w", outPath, err)
+		return err
 	}
 
-	fmt.Println("✅ Model file destroyed successfully.")
 	return nil
 }
 

@@ -18,7 +18,7 @@ import (
 var domain string
 
 var Cmd = &cobra.Command{
-	Use:   "scaffold [name] [fields]",
+	Use:   "scaffold [entity] [fields]",
 	Short: "Generate model, repository, usecase, and handler for a domain entity",
 	Args:  cobra.MinimumNArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {

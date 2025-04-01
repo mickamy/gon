@@ -20,14 +20,17 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		return Destroy(cfg, args)
+		if err := Destroy(cfg, args, domain); err != nil {
+			return fmt.Errorf("⚠️ Failed to destroy usecase: %w", err)
+		}
+		fmt.Printf("✅ Usecase %s destroyed successfully.\n", args[0])
+		return nil
 	},
 }
 
-func Destroy(cfg *config.Config, args []string) error {
+func Destroy(cfg *config.Config, args []string, domain string) error {
 	name := gon.Capitalize(args[0])
 
-	fmt.Println("📄 Destroying usecase file...")
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = name
@@ -37,7 +40,6 @@ func Destroy(cfg *config.Config, args []string) error {
 		return fmt.Errorf("⚠️ Failed to remove usecase file %q: %w", outPath, err)
 	}
 
-	fmt.Println("✅ Usecase file destroyed successfully.")
 	return nil
 }
 

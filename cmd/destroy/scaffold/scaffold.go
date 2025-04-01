@@ -2,6 +2,8 @@ package scaffold
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -9,13 +11,14 @@ import (
 	"github.com/mickamy/gon/cmd/destroy/model"
 	"github.com/mickamy/gon/cmd/destroy/repository"
 	"github.com/mickamy/gon/cmd/destroy/usecase"
+	"github.com/mickamy/gon/internal/config"
 	"github.com/mickamy/gon/internal/gon"
 )
 
 var domain string
 
 var Cmd = &cobra.Command{
-	Use:   "scaffold [name] [fields]",
+	Use:   "scaffold [entity]",
 	Short: "Destroy model, repository, usecase, and handler for a domain entity",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -26,32 +29,47 @@ var Cmd = &cobra.Command{
 			domain = name
 		}
 
-		capitalizedName := gon.Capitalize(name)
-		subcommands := []struct {
-			cmd  *cobra.Command
-			args []string
-		}{
-			{model.Cmd, []string{name}},
-			{repository.Cmd, []string{name}},
-			{usecase.Cmd, []string{"Get" + capitalizedName}},
-			{usecase.Cmd, []string{"List" + capitalizedName}},
-			{usecase.Cmd, []string{"Create" + capitalizedName}},
-			{usecase.Cmd, []string{"Update" + capitalizedName}},
-			{usecase.Cmd, []string{"Delete" + capitalizedName}},
-			{handler.Cmd, []string{name}},
+		cfg, err := config.Load()
+		if err != nil {
+			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
 
-		for _, sub := range subcommands {
-			_ = sub.cmd.Flags().Set("domain", domain)
-			if sub.cmd.RunE == nil {
-				continue
-			}
-			if err := sub.cmd.RunE(sub.cmd, sub.args); err != nil {
-				return fmt.Errorf("failed to execute %s: %w", sub.cmd.Use, err)
-			}
-		}
+		fmt.Printf("🧨 Destroying domain: %s (entity: %s)\n\n", domain, name)
 
-		fmt.Println("🎉 Scaffold complete.")
+		// --- Model ---
+		if err := model.Destroy(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("model destroy failed: %w", err)
+		}
+		modelPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model.go", strings.ToLower(name)))
+		fmt.Printf("✅ model:      %s\n", modelPath)
+
+		// --- Repository ---
+		if err := repository.Destroy(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("repository destroy failed: %w", err)
+		}
+		repoPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
+		fmt.Printf("✅ repository: %s\n", repoPath)
+
+		// --- Usecase ---
+		actions := []string{"list", "get", "create", "update", "delete"}
+		var usecaseFiles []string
+		for _, action := range actions {
+			pascal := gon.PascalCase(action + "_" + name)
+			if err := usecase.Destroy(cfg, []string{pascal}, domain); err != nil {
+				return fmt.Errorf("usecase destroy failed: %w", err)
+			}
+			usecaseFiles = append(usecaseFiles, gon.SnakeCase(action+"_"+name))
+		}
+		fmt.Printf("✅ usecase:    %s\n", strings.Join(usecaseFiles, ", "))
+
+		// --- Handler ---
+		if err := handler.Destroy(cfg, []string{name}, domain); err != nil {
+			return fmt.Errorf("handler destroy failed: %w", err)
+		}
+		handlerPath := filepath.Join(cfg.OutputDir, domain, "handler", fmt.Sprintf("%s_handler.go", strings.ToLower(name)))
+		fmt.Printf("✅ handler:    %s\n", handlerPath)
+
+		fmt.Println("\n🎉 Done.")
 		return nil
 	},
 }

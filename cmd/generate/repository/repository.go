@@ -11,7 +11,6 @@ import (
 
 	"github.com/mickamy/gon/internal/config"
 	"github.com/mickamy/gon/internal/gon"
-	"github.com/mickamy/gon/templates"
 )
 
 type TemplateData struct {
@@ -58,7 +57,7 @@ func GenerateRepository(cfg *config.Config, args []string) error {
 
 	fmt.Println("📄 Generating repository file...")
 	outPath := filepath.Join(cfg.OutputDir, domain, "repository", fmt.Sprintf("%s_repository.go", strings.ToLower(name)))
-	if err := renderToFile(data, outPath); err != nil {
+	if err := renderToFile(cfg, data, outPath); err != nil {
 		return err
 	}
 
@@ -66,8 +65,8 @@ func GenerateRepository(cfg *config.Config, args []string) error {
 	return nil
 }
 
-func renderToFile(data TemplateData, outPath string) error {
-	b, err := templates.DefaultFS.ReadFile("repository_gorm.tmpl")
+func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
+	b, err := os.ReadFile(cfg.RepositoryTemplate)
 	if err != nil {
 		return err
 	}

@@ -97,7 +97,13 @@ func renderToFile(cfg *config.Config, data TemplateData, outPath string) error {
 	} else {
 		bytes, err = templates.DefaultFS.ReadFile(tmplFile)
 		if err != nil {
-			return fmt.Errorf("⚠️ Failed to read embedded template %q: %w", tmplFile, err)
+			bytes, err = templates.DefaultFS.ReadFile(tmplFile)
+			if err != nil {
+				return fmt.Errorf(
+					"⚠️ Failed to read embedded template %q: %w\n💡 You might need to run `gon install` to generate default templates.",
+					tmplFile, err,
+				)
+			}
 		}
 	}
 	tmplContent := string(bytes)

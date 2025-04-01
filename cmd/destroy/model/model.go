@@ -41,6 +41,14 @@ func Destroy(cfg *config.Config, args []string, domain string) error {
 		return err
 	}
 
+	// Remove the test file if it exists
+	testPath := filepath.Join(cfg.OutputDir, domain, "model", fmt.Sprintf("%s_model_test.go", strings.ToLower(name)))
+	if _, err := os.Stat(testPath); err == nil {
+		if err := os.Remove(testPath); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 

@@ -37,7 +37,15 @@ func Destroy(cfg *config.Config, args []string, domain string) error {
 	}
 	outPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case.go", caseconv.SnakeCase(name)))
 	if err := os.Remove(outPath); err != nil {
-		return fmt.Errorf("⚠️ Failed to remove usecase file %q: %w", outPath, err)
+		return err
+	}
+
+	// Remove the test file if it exists
+	testPath := filepath.Join(cfg.OutputDir, domain, "usecase", fmt.Sprintf("%s_use_case_test.go", caseconv.SnakeCase(name)))
+	if _, err := os.Stat(testPath); err == nil {
+		if err := os.Remove(testPath); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -3,6 +3,7 @@ package destroy
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/mickamy/gon/cmd/destroy/di"
 	"github.com/mickamy/gon/cmd/destroy/fixture"
 	"github.com/mickamy/gon/cmd/destroy/handler"
 	"github.com/mickamy/gon/cmd/destroy/model"
@@ -19,6 +20,7 @@ var Cmd = &cobra.Command{
 }
 
 func init() {
+	Cmd.AddCommand(di.Cmd)
 	Cmd.AddCommand(fixture.Cmd)
 	Cmd.AddCommand(handler.Cmd)
 	Cmd.AddCommand(model.Cmd)

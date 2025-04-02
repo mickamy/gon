@@ -3,6 +3,7 @@ outputDir: internal/domain
 testUtilDir: ./test
 dbDriver: gorm
 webFramework: echo
+diFramework: wire
 databasePackage: github.com/mickamy/gon-example/internal/infra/storage/database
 modelTemplate: ./templates/model.tmpl
 modelTestTemplate: ./templates/model_test.tmpl
@@ -13,3 +14,4 @@ usecaseTemplate: ./templates/usecase.tmpl
 usecaseTestTemplate: ./templates/usecase_test.tmpl
 handlerTemplate: ./templates/handler.tmpl
 handlerTestTemplate: ./templates/handler_test.tmpl
+diTemplate: ./templates/di.tmpl

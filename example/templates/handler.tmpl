@@ -8,6 +8,7 @@ import (
 	"{{.DomainPackage}}/usecase"
 )
 
+
 {{- range .Actions}}
 type {{.Name}}{{.Entity}}Handler echo.HandlerFunc
 

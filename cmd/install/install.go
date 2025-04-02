@@ -132,7 +132,7 @@ func copyTemplateFiles(cfg *config.Config) error {
 			return "defaults/handler_test_" + cfg.WebFramework.String() + ".tmpl"
 		},
 		cfg.DiTemplate: func() string {
-			return "defaults/di.tmpl"
+			return "defaults/di_" + cfg.DIFramework.String() + ".tmpl"
 		},
 	}
 

@@ -49,6 +49,13 @@ func RunInstall(cfg *config.Config) error {
 		fmt.Println("✅ gomock installed successfully.")
 	}
 
+	fmt.Println("📦 Installing DI framework...")
+	if err := exec.Command("go", "get", "-tool", cfg.DIFramework.InstallPackage()+"@latest").Run(); err != nil {
+		fmt.Println("⚠️ Failed to install DI framework:", err)
+	} else {
+		fmt.Println("✅ DI framework installed successfully.")
+	}
+
 	return nil
 }
 
@@ -124,6 +131,9 @@ func copyTemplateFiles(cfg *config.Config) error {
 		cfg.HandlerTestTemplate: func() string {
 			return "defaults/handler_test_" + cfg.WebFramework.String() + ".tmpl"
 		},
+		cfg.DiTemplate: func() string {
+			return "defaults/di.tmpl"
+		},
 	}
 
 	for destPath, embedPathFn := range templateFiles {
@@ -134,7 +144,7 @@ func copyTemplateFiles(cfg *config.Config) error {
 		}
 
 		if err := templates.Copy(embedPath, destPath); err != nil {
-			return err
+			return fmt.Errorf("failed to copy template src=[%s] dest=[%s]: %w", embedPath, destPath, err)
 		}
 
 		fmt.Printf("✅ Created template: %s\n", destPath)

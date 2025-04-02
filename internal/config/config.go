@@ -49,12 +49,41 @@ const (
 	WebFrameworkEcho WebFramework = "echo"
 )
 
+type DIFramework string
+
+func IsValidDIFramework(di string) bool {
+	fs := []DIFramework{DIFrameworkWire}
+	for _, d := range fs {
+		if di == d.String() {
+			return true
+		}
+	}
+	return false
+}
+
+func (d DIFramework) String() string {
+	return string(d)
+}
+
+func (d DIFramework) InstallPackage() string {
+	switch d {
+	case DIFrameworkWire:
+		return "github.com/google/wire/cmd/wire"
+	}
+	return ""
+}
+
+const (
+	DIFrameworkWire DIFramework = "wire"
+)
+
 type Config struct {
 	BasePackage            string       `mapstructure:"basePackage"`
 	OutputDir              string       `mapstructure:"outputDir"`
 	TestUtilDir            string       `mapstructure:"testUtilDir"`
 	DBDriver               DBDriver     `mapstructure:"dbDriver"`
 	WebFramework           WebFramework `mapstructure:"webFramework"`
+	DIFramework            DIFramework  `mapstructure:"diFramework"`
 	DatabasePackage        string       `mapstructure:"databasePackage"`
 	ModelTemplate          string       `mapstructure:"modelTemplate"`
 	ModelTestTemplate      string       `mapstructure:"modelTestTemplate"`
@@ -65,6 +94,7 @@ type Config struct {
 	UsecaseTestTemplate    string       `mapstructure:"usecaseTestTemplate"`
 	HandlerTemplate        string       `mapstructure:"handlerTemplate"`
 	HandlerTestTemplate    string       `mapstructure:"handlerTestTemplate"`
+	DiTemplate             string       `mapstructure:"diTemplate"`
 }
 
 func (c Config) DatabasePackagePath() string {

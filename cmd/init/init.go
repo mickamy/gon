@@ -18,6 +18,7 @@ outputDir: {{.OutputDir}}
 testUtilDir: {{.TestUtilDir}}
 dbDriver: {{.DBDriver}}
 webFramework: {{.WebFramework}}
+diFramework: {{.DIFramework}}
 databasePackage: {{.DatabasePackage}}
 modelTemplate: ./templates/model.tmpl
 modelTestTemplate: ./templates/model_test.tmpl
@@ -28,6 +29,7 @@ usecaseTemplate: ./templates/usecase.tmpl
 usecaseTestTemplate: ./templates/usecase_test.tmpl
 handlerTemplate: ./templates/handler.tmpl
 handlerTestTemplate: ./templates/handler_test.tmpl
+diTemplate: ./templates/di.tmpl
 `
 
 type configInput struct {
@@ -36,6 +38,7 @@ type configInput struct {
 	TestUtilDir     string
 	DBDriver        string
 	WebFramework    string
+	DIFramework     string
 	DatabasePackage string
 }
 
@@ -75,7 +78,7 @@ func promptAndWriteConfigFile() error {
 		outDir = "internal/domain"
 	}
 
-	fmt.Println("📂 Test util directory (default: ./test): ")
+	fmt.Print("📂 Test util directory (default: ./test): ")
 	testUtilDir, _ := reader.ReadString('\n')
 	testUtilDir = strings.TrimSpace(testUtilDir)
 	if testUtilDir == "" {
@@ -102,13 +105,25 @@ func promptAndWriteConfigFile() error {
 		return fmt.Errorf("❌ Invalid WEB framework specified: %s", web)
 	}
 
+	fmt.Print("📦 DI framework (default: wire): ")
+	di, _ := reader.ReadString('\n')
+	di = strings.TrimSpace(di)
+	if di == "" {
+		di = config.DIFrameworkWire.String()
+	}
+	if !config.IsValidDIFramework(di) {
+		return fmt.Errorf("❌ Invalid DI framework specified: %s", di)
+	}
+
 	dbPkg := fmt.Sprintf("%s/internal/infra/storage/database", basePkg)
 
 	cfg := configInput{
 		BasePackage:     basePkg,
 		OutputDir:       outDir,
+		TestUtilDir:     testUtilDir,
 		DBDriver:        driver,
 		WebFramework:    web,
+		DIFramework:     di,
 		DatabasePackage: dbPkg,
 	}
 

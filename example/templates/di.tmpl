@@ -1,0 +1,48 @@
+package di
+
+import (
+	"github.com/google/wire"
+
+	"{{.DomainPackage}}/handler"
+	"{{.DomainPackage}}/repository"
+	"{{.DomainPackage}}/usecase"
+)
+
+type Repositories struct {
+	{{- range .Repositories}}
+	repository.{{.Name}}
+	{{- end}}
+}
+
+//lint:ignore U1000 used by wire
+var RepositorySet = wire.NewSet(
+	{{- range .Repositories}}
+    repository.New{{.Name}},
+	{{- end}}
+)
+
+type UseCases struct {
+	{{- range .UseCases}}
+	usecase.{{.Name}}
+	{{- end}}
+}
+
+//lint:ignore U1000 used by wire
+var UseCaseSet = wire.NewSet(
+	{{- range .UseCases}}
+	usecase.New{{.Name}},
+	{{- end}}
+)
+
+type Handlers struct {
+	{{- range .Handlers}}
+	*handler.{{.Name}}Handler
+	{{- end}}
+}
+
+//lint:ignore U1000 used by wire
+var HandlerSet = wire.NewSet(
+	{{- range .Handlers}}
+	handler.{{.Name}},
+    {{- end}}
+)

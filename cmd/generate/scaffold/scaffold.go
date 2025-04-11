@@ -61,7 +61,8 @@ var Cmd = &cobra.Command{
 		var usecaseFiles []string
 		for _, action := range actions {
 			pascal := caseconv.PascalCase(action + "_" + name)
-			if err := usecase.Generate(cfg, []string{pascal}, domain); err != nil {
+			pluralize := action == "list"
+			if err := usecase.Generate(cfg, []string{pascal}, domain, pluralize); err != nil {
 				return fmt.Errorf("usecase generation failed: %w", err)
 			}
 			snake := caseconv.SnakeCase(action + "_" + name)

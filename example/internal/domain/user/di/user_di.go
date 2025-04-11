@@ -14,7 +14,7 @@ type Repositories struct {
 
 //lint:ignore U1000 used by wire
 var RepositorySet = wire.NewSet(
-    repository.NewUser,
+	repository.NewUser,
 )
 
 type UseCases struct {

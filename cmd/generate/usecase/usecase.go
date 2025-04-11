@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/jinzhu/inflection"
 	"github.com/spf13/cobra"
 
 	"github.com/mickamy/gon/internal/caseconv"
@@ -26,7 +27,7 @@ var Cmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("⚠️ Failed to load gon.yaml config: %w", err)
 		}
-		if err := Generate(cfg, args, domain); err != nil {
+		if err := Generate(cfg, args, domain, pluralize); err != nil {
 			return fmt.Errorf("⚠️ Failed generate usecase file: %w", err)
 		}
 		fmt.Println("✅ Usecase file generated successfully.")
@@ -34,22 +35,31 @@ var Cmd = &cobra.Command{
 	},
 }
 
-var domain string
+var (
+	domain    string
+	pluralize bool
+)
 
 func init() {
 	Cmd.Flags().StringVar(&domain, "domain", "", "Domain subdirectory (e.g. 'user')")
+	Cmd.Flags().BoolVar(&pluralize, "pluralize", false, "Pluralize the usecase name")
 }
 
-func Generate(cfg *config.Config, args []string, domain string) error {
+func Generate(cfg *config.Config, args []string, domain string, pluralize bool) error {
 	name := caseconv.Capitalize(args[0])
 	if domain == "" {
 		fmt.Printf("📂 Domain not specified. Using %s as fallback.\n", name)
 		domain = caseconv.SnakeCase(name)
 	}
 
+	uncapitalizedName := caseconv.Uncapitalize(name)
+	if pluralize {
+		name = inflection.Plural(name)
+		uncapitalizedName = inflection.Plural(uncapitalizedName)
+	}
 	data := TemplateData{
 		Name:              name,
-		UncapitalizedName: caseconv.Uncapitalize(name),
+		UncapitalizedName: uncapitalizedName,
 		DomainPackage:     cfg.DomainPackage(domain),
 	}
 

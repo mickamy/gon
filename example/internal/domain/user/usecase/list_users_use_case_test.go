@@ -9,17 +9,17 @@ import (
 	"github.com/mickamy/gon-example/internal/domain/user/usecase"
 )
 
-func TestListUser_Do(t *testing.T) {
+func TestListUsers_Do(t *testing.T) {
 	t.Parallel()
 
 	// arrange
 	ctx := t.Context()
 
 	// act
-	sut := usecase.NewListUser()
-	got, err := sut.Do(ctx, usecase.ListUserInput{})
+	sut := usecase.NewListUsers()
+	got, err := sut.Do(ctx, usecase.ListUsersInput{})
 
 	// assert
 	require.NoError(t, err)
-	assert.Equal(t, usecase.ListUserOutput{}, got)
+	assert.Equal(t, usecase.ListUsersOutput{}, got)
 }
